@@ -3,673 +3,586 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>БензоБот — Заправки рядом</title>
-    
-    <!-- Подключаем Telegram WebApp SDK -->
+    <title>Поиск фильмов</title>
+    <!-- Подключаем Telegram Web App SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    
-    <!-- Подключаем Яндекс Карты -->
-    <script src="https://api-maps.yandex.ru/2.1/?apikey=bd676103-80e2-45e8-8e2a-71249b852c59&lang=ru_RU" type="text/javascript"></script>
-    
     <style>
+        /* ===== ОБЩИЕ СТИЛИ ===== */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: var(--tg-theme-bg-color, #ffffff);
             color: var(--tg-theme-text-color, #000000);
-            padding: 0;
-            margin: 0;
+            padding: 16px;
             min-height: 100vh;
         }
-        
-        /* Шапка */
+
+        /* ===== ЗАГОЛОВОК ===== */
         .header {
-            background: var(--tg-theme-secondary-bg-color, #f0f0f0);
-            padding: 15px 16px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom: 1px solid var(--tg-theme-hint-color, #ccc);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        
-        .header h1 {
-            font-size: 18px;
-            font-weight: 600;
-        }
-        
-        .header .status {
-            font-size: 12px;
-            color: var(--tg-theme-hint-color, #888);
-        }
-        
-        /* Карта */
-        #map {
-            width: 100%;
-            height: 45vh;
-            min-height: 300px;
-        }
-        
-        /* Контейнер для списка заправок */
-        .stations-container {
-            padding: 16px;
-            max-height: calc(100vh - 45vh - 100px);
-            overflow-y: auto;
-        }
-        
-        /* Карточка заправки */
-        .station-card {
-            background: var(--tg-theme-secondary-bg-color, #f8f8f8);
-            border-radius: 12px;
-            padding: 14px 16px;
-            margin-bottom: 12px;
-            border: 1px solid var(--tg-theme-hint-color, #e0e0e0);
-            transition: all 0.2s;
-        }
-        
-        .station-card .name {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-        
-        .station-card .address {
-            font-size: 13px;
-            color: var(--tg-theme-hint-color, #666);
-            margin-bottom: 8px;
-        }
-        
-        .station-card .distance {
-            font-size: 12px;
-            color: var(--tg-theme-hint-color, #888);
-            margin-bottom: 8px;
-        }
-        
-        .station-card .fuels {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 8px;
-        }
-        
-        .station-card .fuel-tag {
-            background: var(--tg-theme-bg-color, #fff);
-            border-radius: 8px;
-            padding: 4px 10px;
-            font-size: 13px;
-            border: 1px solid var(--tg-theme-hint-color, #ddd);
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-        }
-        
-        .fuel-tag .available {
-            color: #4caf50;
-            font-weight: 600;
-        }
-        
-        .fuel-tag .unavailable {
-            color: #f44336;
-            font-weight: 600;
-        }
-        
-        .fuel-tag .price {
-            font-weight: 600;
-            color: var(--tg-theme-text-color, #000);
-        }
-        
-        .station-card .report-btn {
-            margin-top: 10px;
-            background: var(--tg-theme-button-color, #2481cc);
-            color: var(--tg-theme-button-text-color, #fff);
-            border: none;
-            border-radius: 8px;
-            padding: 8px 16px;
-            font-size: 14px;
-            cursor: pointer;
-            width: 100%;
-            transition: opacity 0.2s;
-        }
-        
-        .station-card .report-btn:active {
-            opacity: 0.7;
-        }
-        
-        /* Модальное окно для добавления цен */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
-            z-index: 200;
-            align-items: flex-end;
-            justify-content: center;
-            animation: fadeIn 0.3s;
-        }
-        
-        .modal.active {
-            display: flex;
-        }
-        
-        .modal-content {
-            background: var(--tg-theme-bg-color, #fff);
-            border-radius: 16px 16px 0 0;
-            padding: 24px 20px;
-            width: 100%;
-            max-width: 500px;
-            max-height: 80vh;
-            overflow-y: auto;
-            animation: slideUp 0.3s;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
-        @keyframes slideUp {
-            from { transform: translateY(100%); }
-            to { transform: translateY(0); }
-        }
-        
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-        
-        .modal-header h2 {
-            font-size: 18px;
-        }
-        
-        .modal-close {
-            background: none;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            color: var(--tg-theme-hint-color, #888);
-        }
-        
-        .modal label {
-            display: block;
-            font-size: 14px;
-            font-weight: 500;
-            margin-top: 12px;
-            margin-bottom: 4px;
-        }
-        
-        .modal input, .modal select {
-            width: 100%;
-            padding: 10px 12px;
-            border-radius: 8px;
-            border: 1px solid var(--tg-theme-hint-color, #ddd);
-            background: var(--tg-theme-secondary-bg-color, #f5f5f5);
-            color: var(--tg-theme-text-color, #000);
-            font-size: 16px;
-        }
-        
-        .modal .submit-btn {
-            margin-top: 20px;
-            background: var(--tg-theme-button-color, #2481cc);
-            color: var(--tg-theme-button-text-color, #fff);
-            border: none;
-            border-radius: 8px;
-            padding: 12px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            width: 100%;
-            transition: opacity 0.2s;
-        }
-        
-        .modal .submit-btn:active {
-            opacity: 0.7;
-        }
-        
-        /* Загрузчик */
-        .loader {
             text-align: center;
-            padding: 30px;
-            color: var(--tg-theme-hint-color, #888);
+            padding: 20px 0;
+            background: var(--tg-theme-secondary-bg-color, #f0f0f0);
+            border-radius: 16px;
+            margin-bottom: 20px;
         }
-        
-        .loader .spinner {
-            display: inline-block;
-            width: 30px;
-            height: 30px;
-            border: 3px solid var(--tg-theme-hint-color, #ddd);
-            border-top-color: var(--tg-theme-button-color, #2481cc);
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--tg-theme-text-color, #000000);
+        }
+
+        .header p {
+            font-size: 14px;
+            color: var(--tg-theme-hint-color, #999999);
+            margin-top: 4px;
+        }
+
+        /* ===== ПОЛЕ ПОИСКА ===== */
+        .search-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid var(--tg-theme-button-color, #3390ec);
+            border-radius: 12px;
+            font-size: 16px;
+            background: var(--tg-theme-bg-color, #ffffff);
+            color: var(--tg-theme-text-color, #000000);
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .search-input:focus {
+            border-color: var(--tg-theme-button-color, #3390ec);
+            box-shadow: 0 0 0 3px rgba(51, 144, 236, 0.2);
+        }
+
+        .search-input::placeholder {
+            color: var(--tg-theme-hint-color, #999999);
+        }
+
+        .search-button {
+            padding: 12px 24px;
+            background: var(--tg-theme-button-color, #3390ec);
+            color: var(--tg-theme-button-text-color, #ffffff);
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .search-button:hover {
+            opacity: 0.9;
+            transform: scale(1.02);
+        }
+
+        .search-button:active {
+            transform: scale(0.98);
+        }
+
+        /* ===== СОСТОЯНИЕ ЗАГРУЗКИ ===== */
+        .loading {
+            text-align: center;
+            padding: 40px 0;
+            display: none;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid var(--tg-theme-secondary-bg-color, #f0f0f0);
+            border-top: 4px solid var(--tg-theme-button-color, #3390ec);
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
+            margin: 0 auto 16px;
         }
-        
+
         @keyframes spin {
-            to { transform: rotate(360deg); }
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
-        
-        .empty-state {
+
+        .loading p {
+            color: var(--tg-theme-hint-color, #999999);
+            font-size: 14px;
+        }
+
+        /* ===== РЕЗУЛЬТАТЫ ===== */
+        .results {
+            display: none;
+        }
+
+        .results.active {
+            display: block;
+        }
+
+        .results-count {
+            font-size: 14px;
+            color: var(--tg-theme-hint-color, #999999);
+            margin-bottom: 16px;
+            padding: 0 4px;
+        }
+
+        /* ===== КАРТОЧКИ ФИЛЬМОВ ===== */
+        .movie-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+
+        .movie-card {
+            display: flex;
+            gap: 16px;
+            background: var(--tg-theme-secondary-bg-color, #f5f5f5);
+            border-radius: 16px;
+            padding: 16px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .movie-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .movie-poster {
+            width: 80px;
+            height: 120px;
+            border-radius: 8px;
+            object-fit: cover;
+            flex-shrink: 0;
+            background: var(--tg-theme-hint-color, #cccccc);
+        }
+
+        .movie-poster.placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            background: var(--tg-theme-hint-color, #cccccc);
+            color: var(--tg-theme-text-color, #ffffff);
+        }
+
+        .movie-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-width: 0;
+        }
+
+        .movie-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--tg-theme-text-color, #000000);
+            margin-bottom: 4px;
+        }
+
+        .movie-year {
+            font-size: 14px;
+            color: var(--tg-theme-hint-color, #999999);
+        }
+
+        .movie-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px 12px;
+            margin: 8px 0;
+            font-size: 13px;
+        }
+
+        .movie-meta-item {
+            color: var(--tg-theme-hint-color, #999999);
+        }
+
+        .movie-rating {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 700;
+            background: var(--tg-theme-button-color, #3390ec);
+            color: var(--tg-theme-button-text-color, #ffffff);
+        }
+
+        .movie-rating.high {
+            background: #4CAF50;
+        }
+
+        .movie-rating.medium {
+            background: #FF9800;
+        }
+
+        .movie-rating.low {
+            background: #F44336;
+        }
+
+        .movie-link {
+            display: inline-block;
+            margin-top: 8px;
+            padding: 6px 14px;
+            background: var(--tg-theme-button-color, #3390ec);
+            color: var(--tg-theme-button-text-color, #ffffff);
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .movie-link:hover {
+            opacity: 0.9;
+        }
+
+        .movie-description {
+            font-size: 13px;
+            color: var(--tg-theme-hint-color, #999999);
+            margin-top: 4px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* ===== СООБЩЕНИЕ ОБ ОШИБКЕ ===== */
+        .error-message {
             text-align: center;
             padding: 40px 20px;
-            color: var(--tg-theme-hint-color, #888);
+            display: none;
         }
-        
-        .empty-state .icon {
+
+        .error-message.active {
+            display: block;
+        }
+
+        .error-message .icon {
             font-size: 48px;
-            margin-bottom: 12px;
+            margin-bottom: 16px;
         }
-        
-        /* Кнопка обновления */
-        .refresh-btn {
-            background: var(--tg-theme-secondary-bg-color, #f0f0f0);
-            border: 1px solid var(--tg-theme-hint-color, #ddd);
-            border-radius: 8px;
-            padding: 6px 12px;
-            font-size: 13px;
+
+        .error-message h3 {
+            font-size: 18px;
+            color: var(--tg-theme-text-color, #000000);
+            margin-bottom: 8px;
+        }
+
+        .error-message p {
+            font-size: 14px;
+            color: var(--tg-theme-hint-color, #999999);
+        }
+
+        /* ===== КНОПКА ЗАКРЫТИЯ (для Web App) ===== */
+        .close-button {
+            display: none;
+            width: 100%;
+            padding: 14px;
+            margin-top: 20px;
+            background: var(--tg-theme-destructive-text-color, #ff3b30);
+            color: #ffffff;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
             cursor: pointer;
-            color: var(--tg-theme-text-color, #000);
         }
-        
-        /* Адаптив */
-        @media (max-width: 480px) {
-            .header h1 { font-size: 16px; }
-            .station-card { padding: 12px 14px; }
+
+        .close-button.active {
+            display: block;
+        }
+
+        /* ===== АДАПТИВ ===== */
+        @media (min-width: 600px) {
+            .movie-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 900px) {
+            .movie-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Шапка -->
+
+    <!-- ===== ЗАГОЛОВОК ===== -->
     <div class="header">
-        <h1>⛽ БензоБот</h1>
-        <div>
-            <span class="status" id="statusLabel">Загрузка...</span>
-            <button class="refresh-btn" onclick="loadStations()" style="margin-left: 8px;">🔄</button>
-        </div>
+        <h1>🎬 Поиск фильмов</h1>
+        <p>Найди любой фильм на Кинопоиске</p>
     </div>
-    
-    <!-- Карта -->
-    <div id="map"></div>
-    
-    <!-- Список заправок -->
-    <div class="stations-container" id="stationsList">
-        <div class="loader">
-            <div class="spinner"></div>
-            <p style="margin-top: 12px;">Ищем заправки рядом...</p>
-        </div>
+
+    <!-- ===== ПОИСК ===== -->
+    <div class="search-container">
+        <input 
+            type="text" 
+            class="search-input" 
+            id="searchInput" 
+            placeholder="Введите название фильма..."
+            autofocus
+        >
+        <button class="search-button" id="searchButton">🔍 Найти</button>
     </div>
-    
-    <!-- Модальное окно для добавления цен -->
-    <div class="modal" id="reportModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="modalStationName">⛽ Заправка</h2>
-                <button class="modal-close" onclick="closeModal()">✕</button>
-            </div>
-            
-            <label>Тип топлива</label>
-            <select id="fuelType">
-                <option value="АИ-92">АИ-92</option>
-                <option value="АИ-95" selected>АИ-95</option>
-                <option value="АИ-98">АИ-98</option>
-                <option value="ДТ">ДТ</option>
-            </select>
-            
-            <label>Цена (₽ за литр)</label>
-            <input type="number" id="fuelPrice" placeholder="Например: 55.5" step="0.01" min="0">
-            
-            <label>Наличие</label>
-            <select id="fuelAvailable">
-                <option value="1">✅ Есть в наличии</option>
-                <option value="0">❌ Нет в наличии</option>
-            </select>
-            
-            <button class="submit-btn" onclick="submitReport()">📤 Отправить данные</button>
-        </div>
+
+    <!-- ===== ЗАГРУЗКА ===== -->
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <p>Ищем фильмы...</p>
     </div>
-    
+
+    <!-- ===== РЕЗУЛЬТАТЫ ===== -->
+    <div class="results" id="results">
+        <div class="results-count" id="resultsCount"></div>
+        <div class="movie-grid" id="movieGrid"></div>
+    </div>
+
+    <!-- ===== ОШИБКА ===== -->
+    <div class="error-message" id="errorMessage">
+        <div class="icon">😔</div>
+        <h3>Фильм не найден</h3>
+        <p>Попробуйте изменить название или поискать на английском</p>
+    </div>
+
+    <!-- ===== КНОПКА ЗАКРЫТИЯ ===== -->
+    <button class="close-button" id="closeButton" onclick="closeApp()">✕ Закрыть</button>
+
     <script>
-        // ============================================================
-        //  ИНИЦИАЛИЗАЦИЯ
-        // ============================================================
-        
-        // Получаем данные о пользователе из Telegram
+        // =============================================================
+        // 1. ИНИЦИАЛИЗАЦИЯ TELEGRAM WEB APP
+        // =============================================================
         const tg = window.Telegram.WebApp;
-        tg.expand(); // Раскрываем приложение на весь экран
-        
-        // Переменные
-        let userLocation = null;
-        let map = null;
-        let mapObjects = null;
-        let currentStationAddress = '';
-        let currentStationLat = 0;
-        let currentStationLon = 0;
-        
-        // ============================================================
-        //  ПОЛУЧЕНИЕ ГЕОЛОКАЦИИ
-        // ============================================================
-        
-        function getUserLocation() {
-            return new Promise((resolve, reject) => {
-                // Пробуем через Telegram WebApp
-                if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-                    // В Telegram Mini App нет прямого доступа к геолокации через WebApp API
-                    // Используем браузерный API
-                }
-                
-                if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(
-                        (pos) => {
-                            resolve({
-                                lat: pos.coords.latitude,
-                                lon: pos.coords.longitude
-                            });
-                        },
-                        (err) => {
-                            console.error('Ошибка геолокации:', err);
-                            // Используем примерные координаты (Москва)
-                            resolve({ lat: 55.7558, lon: 37.6173 });
-                        },
-                        { enableHighAccuracy: true, timeout: 10000 }
-                    );
-                } else {
-                    // Координаты по умолчанию (Москва)
-                    resolve({ lat: 55.7558, lon: 37.6173 });
-                }
-            });
+
+        // Расширяем приложение на весь экран
+        tg.expand();
+
+        // Показываем кнопку "Закрыть" в мобильной версии
+        if (tg.platform === 'android' || tg.platform === 'ios') {
+            document.getElementById('closeButton').classList.add('active');
         }
-        
-        // ============================================================
-        //  ЗАГРУЗКА ДАННЫХ О ЗАПРАВКАХ
-        // ============================================================
-        
-        async function loadStations() {
-            if (!userLocation) {
-                userLocation = await getUserLocation();
+
+        // Настраиваем цвет заголовка
+        tg.setHeaderColor(tg.themeParams.bg_color || '#ffffff');
+
+        // =============================================================
+        // 2. ПОИСК ФИЛЬМОВ
+        // =============================================================
+        const searchInput = document.getElementById('searchInput');
+        const searchButton = document.getElementById('searchButton');
+        const loading = document.getElementById('loading');
+        const results = document.getElementById('results');
+        const movieGrid = document.getElementById('movieGrid');
+        const resultsCount = document.getElementById('resultsCount');
+        const errorMessage = document.getElementById('errorMessage');
+
+        // Функция поиска
+        async function searchMovies(query) {
+            if (!query.trim()) {
+                // Показываем подсказку через Telegram
+                tg.showAlert('Пожалуйста, введите название фильма');
+                return;
             }
+
+            // Показываем загрузку
+            loading.classList.add('active');
+            results.classList.remove('active');
+            errorMessage.classList.remove('active');
+            movieGrid.innerHTML = '';
             
-            const lat = userLocation.lat;
-            const lon = userLocation.lon;
-            
-            document.getElementById('statusLabel').textContent = 'Поиск...';
-            document.getElementById('stationsList').innerHTML = `
-                <div class="loader">
-                    <div class="spinner"></div>
-                    <p style="margin-top: 12px;">Загружаем заправки...</p>
-                </div>
-            `;
-            
+            // Показываем индикатор загрузки в Telegram
+            tg.showPopup({
+                title: 'Поиск',
+                message: `Ищем «${query}»...`,
+                buttons: [{ type: 'cancel', text: 'Отмена' }]
+            });
+
             try {
-                // Отправляем запрос к боту (через WebApp)
-                // В реальном проекте здесь будет запрос к вашему бэкенду
-                // Сейчас используем API Яндекс Карт напрямую
-                
-                const response = await fetch(
-                    `https://search-maps.yandex.ru/v1/?apikey=bd676103-80e2-45e8-8e2a-71249b852c59&text=АЗС&lang=ru_RU&ll=${lon},${lat}&spn=0.05,0.05&rspn=1&type=biz&results=15`
-                );
-                
+                // ===== ЗАПРОС К ВАШЕМУ БОТУ =====
+                // ВАЖНО: Замените URL на адрес вашего бота
+                const response = await fetch('https://ваш-сервер.com/search', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ query: query })
+                });
+
+                // Закрываем popup
+                tg.closePopup();
+
+                if (!response.ok) {
+                    throw new Error(`Ошибка ${response.status}`);
+                }
+
                 const data = await response.json();
-                const stations = data.features || [];
-                
-                if (stations.length === 0) {
-                    document.getElementById('stationsList').innerHTML = `
-                        <div class="empty-state">
-                            <div class="icon">😔</div>
-                            <p>Не найдено заправок поблизости</p>
-                        </div>
-                    `;
-                    document.getElementById('statusLabel').textContent = 'Ничего не найдено';
+
+                // Проверяем, есть ли результаты
+                if (!data.docs || data.docs.length === 0) {
+                    errorMessage.classList.add('active');
                     return;
                 }
-                
-                // Отображаем список
-                renderStations(stations, lat, lon);
-                
-                // Отображаем на карте
-                renderMap(stations, lat, lon);
-                
-                document.getElementById('statusLabel').textContent = `${stations.length} заправок`;
+
+                // Отображаем результаты
+                displayMovies(data.docs);
                 
             } catch (error) {
-                console.error('Ошибка загрузки:', error);
-                document.getElementById('stationsList').innerHTML = `
-                    <div class="empty-state">
-                        <div class="icon">⚠️</div>
-                        <p>Ошибка загрузки данных</p>
-                        <button onclick="loadStations()" style="margin-top:12px;padding:8px 20px;border-radius:8px;border:1px solid var(--tg-theme-hint-color,#ddd);background:var(--tg-theme-secondary-bg-color,#f0f0f0);cursor:pointer;">Попробовать снова</button>
-                    </div>
-                `;
-                document.getElementById('statusLabel').textContent = 'Ошибка';
+                tg.closePopup();
+                tg.showAlert(`❌ Ошибка: ${error.message}`);
+                console.error('Ошибка поиска:', error);
+            } finally {
+                loading.classList.remove('active');
             }
         }
-        
-        // ============================================================
-        //  ОТОБРАЖЕНИЕ СПИСКА
-        // ============================================================
-        
-        function renderStations(stations, userLat, userLon) {
-            let html = '';
+
+        // =============================================================
+        // 3. ОТОБРАЖЕНИЕ РЕЗУЛЬТАТОВ
+        // =============================================================
+        function displayMovies(movies) {
+            results.classList.add('active');
+            resultsCount.textContent = `Найдено фильмов: ${movies.length}`;
             
-            stations.forEach((feature, index) => {
-                const props = feature.properties || {};
-                const coords = feature.geometry?.coordinates || [];
-                const name = props.name || 'Неизвестная АЗС';
-                const address = props.description || '';
-                const company = props.CompanyMetaData?.name || '';
+            movieGrid.innerHTML = '';
+
+            movies.forEach((movie, index) => {
+                const card = document.createElement('div');
+                card.className = 'movie-card';
                 
-                const stationLat = coords[1] || 0;
-                const stationLon = coords[0] || 0;
-                const distance = haversine(userLat, userLon, stationLat, stationLon);
-                
-                // Примерные цены (в реальности берутся от пользователей)
-                const fuels = [
-                    { name: 'АИ-92', price: 52.3 + Math.random() * 3, available: Math.random() > 0.3 },
-                    { name: 'АИ-95', price: 55.7 + Math.random() * 3, available: Math.random() > 0.2 },
-                    { name: 'ДТ', price: 56.1 + Math.random() * 3, available: Math.random() > 0.4 }
-                ];
-                
-                html += `
-                    <div class="station-card" data-index="${index}">
-                        <div class="name">${name}</div>
-                        ${company ? `<div style="font-size:13px;color:var(--tg-theme-hint-color,#666);margin-bottom:4px;">🏢 ${company}</div>` : ''}
-                        <div class="address">📍 ${address}</div>
-                        <div class="distance">📏 ${distance.toFixed(2)} км от вас</div>
-                        <div class="fuels">
-                            ${fuels.map(f => `
-                                <span class="fuel-tag">
-                                    ${f.name}
-                                    <span class="${f.available ? 'available' : 'unavailable'}">
-                                        ${f.available ? '✅' : '❌'}
-                                    </span>
-                                    <span class="price">${f.price.toFixed(1)} ₽</span>
-                                </span>
-                            `).join('')}
+                // Получаем данные
+                const title = movie.name || 'Без названия';
+                const year = movie.year || '—';
+                const rating = movie.rating?.kp || movie.rating?.imdb || null;
+                const genres = movie.genres?.map(g => g.name).slice(0, 3).join(', ') || '—';
+                const countries = movie.countries?.map(c => c.name).slice(0, 3).join(', ') || '—';
+                const description = movie.description || movie.shortDescription || 'Описание отсутствует';
+                const poster = movie.poster?.url || movie.poster?.previewUrl || null;
+                const kinopoiskId = movie.id;
+                const link = `https://www.kinopoisk.ru/film/${kinopoiskId}/`;
+
+                // Определяем класс для рейтинга
+                let ratingClass = '';
+                if (rating !== null) {
+                    if (rating >= 7) ratingClass = 'high';
+                    else if (rating >= 5) ratingClass = 'medium';
+                    else ratingClass = 'low';
+                }
+
+                // Постер
+                const posterHtml = poster 
+                    ? `<img class="movie-poster" src="${poster}" alt="${title}" loading="lazy">`
+                    : `<div class="movie-poster placeholder">🎬</div>`;
+
+                // Рейтинг
+                const ratingHtml = rating !== null 
+                    ? `<span class="movie-rating ${ratingClass}">⭐ ${rating.toFixed(1)}</span>` 
+                    : '';
+
+                // Создаём карточку
+                card.innerHTML = `
+                    ${posterHtml}
+                    <div class="movie-info">
+                        <div>
+                            <div class="movie-title">${title}</div>
+                            <div class="movie-year">${year}</div>
+                            <div class="movie-meta">
+                                <span class="movie-meta-item">🎭 ${genres}</span>
+                                <span class="movie-meta-item">🌍 ${countries}</span>
+                            </div>
+                            ${ratingHtml}
                         </div>
-                        <button class="report-btn" onclick="openReportModal('${name.replace(/'/g, "\\'")}', ${stationLat}, ${stationLon})">
-                            ✏️ Сообщить цены
-                        </button>
+                        <div>
+                            <div class="movie-description">${description}</div>
+                            <a href="${link}" class="movie-link" target="_blank">
+                                🔗 Открыть на Кинопоиске
+                            </a>
+                        </div>
                     </div>
                 `;
-            });
-            
-            document.getElementById('stationsList').innerHTML = html;
-        }
-        
-        // ============================================================
-        //  ОТОБРАЖЕНИЕ КАРТЫ
-        // ============================================================
-        
-        function renderMap(stations, userLat, userLon) {
-            if (typeof ymaps === 'undefined') {
-                console.log('Яндекс Карты не загружены');
-                return;
-            }
-            
-            ymaps.ready(() => {
-                if (!map) {
-                    map = new ymaps.Map('map', {
-                        center: [userLat, userLon],
-                        zoom: 14,
-                        controls: ['zoomControl', 'fullscreenControl']
-                    });
-                    
-                    mapObjects = new ymaps.GeoObjectCollection();
-                    map.geoObjects.add(mapObjects);
-                }
-                
-                // Очищаем старые метки
-                mapObjects.removeAll();
-                
-                // Добавляем метку пользователя
-                const userPlacemark = new ymaps.Placemark(
-                    [userLat, userLon],
-                    { balloonContent: '📍 Вы здесь' },
-                    { preset: 'islands#redCircleIcon' }
-                );
-                mapObjects.add(userPlacemark);
-                
-                // Добавляем метки заправок
-                stations.forEach((feature) => {
-                    const coords = feature.geometry?.coordinates || [];
-                    const name = feature.properties?.name || 'АЗС';
-                    
-                    if (coords.length === 2) {
-                        const placemark = new ymaps.Placemark(
-                            [coords[1], coords[0]],
-                            { balloonContent: `<b>${name}</b><br>${feature.properties?.description || ''}` },
-                            { preset: 'islands#blueDotIcon' }
-                        );
-                        mapObjects.add(placemark);
-                    }
+
+                // Клик по карточке — открываем ссылку
+                card.addEventListener('click', () => {
+                    tg.openLink(link);
                 });
-                
-                // Центрируем карту, если нужно
-                if (stations.length > 0) {
-                    // map.setCenter([userLat, userLon], 14);
+
+                movieGrid.appendChild(card);
+            });
+        }
+
+        // =============================================================
+        // 4. ОБРАБОТЧИКИ СОБЫТИЙ
+        // =============================================================
+
+        // Поиск по кнопке
+        searchButton.addEventListener('click', () => {
+            searchMovies(searchInput.value);
+        });
+
+        // Поиск по Enter
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                searchMovies(searchInput.value);
+            }
+        });
+
+        // =============================================================
+        // 5. ФУНКЦИЯ ЗАКРЫТИЯ
+        // =============================================================
+        function closeApp() {
+            tg.close();
+        }
+
+        // =============================================================
+        // 6. ДЕМО-ДАННЫЕ (для локального тестирования)
+        // =============================================================
+        // Если вы хотите протестировать интерфейс без сервера,
+        // раскомментируйте этот блок:
+        /*
+        setTimeout(() => {
+            const demoMovies = [
+                {
+                    id: 258687,
+                    name: 'Интерстеллар',
+                    year: 2014,
+                    rating: { kp: 8.7, imdb: 8.6 },
+                    genres: [{ name: 'фантастика' }, { name: 'драма' }],
+                    countries: [{ name: 'США' }],
+                    description: 'Когда засуха, пыльные бури и вымирание растений приводят человечество к продовольственному кризису...',
+                    poster: { url: 'https://st.kp.yandex.net/images/film_iphone/iphone360_258687.jpg' }
+                },
+                {
+                    id: 689,
+                    name: 'Гарри Поттер и философский камень',
+                    year: 2001,
+                    rating: { kp: 8.1, imdb: 7.6 },
+                    genres: [{ name: 'фэнтези' }, { name: 'приключения' }],
+                    countries: [{ name: 'Великобритания' }, { name: 'США' }],
+                    description: 'Жизнь десятилетнего Гарри Поттера нельзя назвать сладкой: его родители умерли...',
+                    poster: { url: 'https://st.kp.yandex.net/images/film_iphone/iphone360_689.jpg' }
                 }
-            });
-        }
-        
-        // ============================================================
-        //  ФУНКЦИИ ДЛЯ МОДАЛЬНОГО ОКНА
-        // ============================================================
-        
-        function openReportModal(stationName, lat, lon) {
-            currentStationAddress = stationName;
-            currentStationLat = lat;
-            currentStationLon = lon;
-            
-            document.getElementById('modalStationName').textContent = `⛽ ${stationName}`;
-            document.getElementById('reportModal').classList.add('active');
-            document.getElementById('fuelPrice').value = '';
-            document.getElementById('fuelPrice').focus();
-        }
-        
-        function closeModal() {
-            document.getElementById('reportModal').classList.remove('active');
-        }
-        
-        // ============================================================
-        //  ОТПРАВКА ДАННЫХ В БОТА
-        // ============================================================
-        
-        async function submitReport() {
-            const fuelType = document.getElementById('fuelType').value;
-            const price = parseFloat(document.getElementById('fuelPrice').value);
-            const isAvailable = parseInt(document.getElementById('fuelAvailable').value);
-            
-            if (!price || price <= 0) {
-                tg.showAlert('⚠️ Пожалуйста, введите корректную цену');
-                return;
-            }
-            
-            // Отправляем данные через Telegram WebApp
-            const data = {
-                station: currentStationAddress,
-                lat: currentStationLat,
-                lon: currentStationLon,
-                fuel: fuelType,
-                price: price,
-                available: isAvailable
-            };
-            
-            try {
-                // Вариант 1: Через WebApp.sendData (бот получит в виде строки)
-                tg.sendData(JSON.stringify(data));
-                
-                // Вариант 2: Если у вас есть серверная часть
-                // await fetch('https://ваш-сервер.com/api/report', {
-                //     method: 'POST',
-                //     headers: { 'Content-Type': 'application/json' },
-                //     body: JSON.stringify(data)
-                // });
-                
-                tg.showAlert('✅ Данные отправлены! Спасибо за помощь!');
-                closeModal();
-                
-                // Обновляем список через пару секунд
-                setTimeout(() => loadStations(), 2000);
-                
-            } catch (error) {
-                tg.showAlert('❌ Ошибка отправки. Попробуйте позже.');
-                console.error('Ошибка:', error);
-            }
-        }
-        
-        // ============================================================
-        //  ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
-        // ============================================================
-        
-        function haversine(lat1, lon1, lat2, lon2) {
-            const R = 6371;
-            const dLat = (lat2 - lat1) * Math.PI / 180;
-            const dLon = (lon2 - lon1) * Math.PI / 180;
-            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-                      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-                      Math.sin(dLon/2) * Math.sin(dLon/2);
-            return R * 2 * Math.asin(Math.sqrt(a));
-        }
-        
-        // ============================================================
-        //  ЗАПУСК
-        // ============================================================
-        
-        // Ждём загрузку Яндекс Карт, потом грузим заправки
-        function waitForMaps() {
-            if (typeof ymaps !== 'undefined') {
-                loadStations();
-            } else {
-                setTimeout(waitForMaps, 500);
-            }
-        }
-        
-        // Старт
-        document.addEventListener('DOMContentLoaded', () => {
-            // Показываем интерфейс
-            tg.ready();
-            
-            // Начинаем с поиска местоположения
-            getUserLocation().then(loc => {
-                userLocation = loc;
-                waitForMaps();
-            });
-        });
-        
-        // Закрытие модалки по клику на фон
-        document.getElementById('reportModal').addEventListener('click', (e) => {
-            if (e.target === document.getElementById('reportModal')) {
-                closeModal();
-            }
-        });
+            ];
+            displayMovies(demoMovies);
+            results.classList.add('active');
+            resultsCount.textContent = 'Найдено фильмов: 2';
+        }, 500);
+        */
+
+        console.log('🎬 Mini App для поиска фильмов загружен!');
     </script>
 </body>
 </html>
