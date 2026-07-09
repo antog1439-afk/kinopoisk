@@ -24,7 +24,7 @@
         }
 
         /* ============================================================
-           ДИНАМИЧЕСКИЙ ГРАДИЕНТ
+           ДИНАМИЧЕСКИЙ ГРАДИЕНТ ФОН
            ============================================================ */
         .gradient-bg {
             position: fixed;
@@ -33,7 +33,7 @@
             right: 0;
             bottom: 0;
             z-index: -2;
-            transition: background 2s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .gradient-overlay {
@@ -43,9 +43,10 @@
             right: 0;
             bottom: 0;
             z-index: -1;
-            background: rgba(10, 10, 15, 0.75);
-            backdrop-filter: blur(60px);
-            -webkit-backdrop-filter: blur(60px);
+            background: rgba(10, 10, 15, 0.65);
+            backdrop-filter: blur(80px);
+            -webkit-backdrop-filter: blur(80px);
+            transition: all 1.5s ease;
         }
 
         /* ============================================================
@@ -111,7 +112,7 @@
         }
 
         /* ============================================================
-           ВКЛАДКИ - СТИЛЬНЫЕ ИКОНКИ
+           ВКЛАДКИ - СТИЛЬНЫЕ С ЦВЕТНЫМ ФОНОМ
            ============================================================ */
         .tabs {
             display: flex;
@@ -127,60 +128,91 @@
             align-items: center;
             justify-content: center;
             gap: 4px;
-            width: 64px;
-            height: 64px;
+            width: 68px;
+            height: 68px;
             padding: 0;
             background: rgba(255, 255, 255, 0.03);
             color: rgba(255, 255, 255, 0.2);
             border: 1px solid rgba(255, 255, 255, 0.04);
-            border-radius: 16px;
+            border-radius: 18px;
             cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             position: relative;
             overflow: hidden;
         }
 
-        /* Градиентный фон при наведении */
+        /* Цветной фон для кнопок */
         .tab-btn::before {
             content: '';
             position: absolute;
             inset: 0;
-            border-radius: 16px;
+            border-radius: 18px;
             opacity: 0;
-            transition: opacity 0.4s ease;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .tab-btn:hover::before {
-            opacity: 1;
+            opacity: 0.6;
         }
 
+        /* Цвета фона для разных вкладок */
         .tab-btn[data-tab="movies"]::before {
-            background: linear-gradient(135deg, rgba(255, 107, 107, 0.08), rgba(255, 107, 107, 0.02));
+            background: linear-gradient(135deg, rgba(255, 107, 107, 0.25), rgba(255, 107, 107, 0.05));
         }
 
         .tab-btn[data-tab="series"]::before {
-            background: linear-gradient(135deg, rgba(77, 150, 255, 0.08), rgba(77, 150, 255, 0.02));
+            background: linear-gradient(135deg, rgba(77, 150, 255, 0.25), rgba(77, 150, 255, 0.05));
         }
 
         .tab-btn[data-tab="books"]::before {
-            background: linear-gradient(135deg, rgba(107, 203, 119, 0.08), rgba(107, 203, 119, 0.02));
+            background: linear-gradient(135deg, rgba(107, 203, 119, 0.25), rgba(107, 203, 119, 0.05));
+        }
+
+        /* Активные кнопки с цветным фоном */
+        .tab-btn[data-tab="movies"].active {
+            background: rgba(255, 107, 107, 0.15);
+            border-color: rgba(255, 107, 107, 0.3);
+            box-shadow: 0 4px 30px rgba(255, 107, 107, 0.1);
+            transform: translateY(-3px) scale(1.02);
+        }
+
+        .tab-btn[data-tab="movies"].active::before {
+            opacity: 1;
+            background: linear-gradient(135deg, rgba(255, 107, 107, 0.2), rgba(255, 107, 107, 0.05));
+        }
+
+        .tab-btn[data-tab="series"].active {
+            background: rgba(77, 150, 255, 0.15);
+            border-color: rgba(77, 150, 255, 0.3);
+            box-shadow: 0 4px 30px rgba(77, 150, 255, 0.1);
+            transform: translateY(-3px) scale(1.02);
+        }
+
+        .tab-btn[data-tab="series"].active::before {
+            opacity: 1;
+            background: linear-gradient(135deg, rgba(77, 150, 255, 0.2), rgba(77, 150, 255, 0.05));
+        }
+
+        .tab-btn[data-tab="books"].active {
+            background: rgba(107, 203, 119, 0.15);
+            border-color: rgba(107, 203, 119, 0.3);
+            box-shadow: 0 4px 30px rgba(107, 203, 119, 0.1);
+            transform: translateY(-3px) scale(1.02);
+        }
+
+        .tab-btn[data-tab="books"].active::before {
+            opacity: 1;
+            background: linear-gradient(135deg, rgba(107, 203, 119, 0.2), rgba(107, 203, 119, 0.05));
         }
 
         .tab-btn:hover {
-            transform: translateY(-3px) scale(1.02);
-            border-color: rgba(255, 255, 255, 0.08);
+            transform: translateY(-2px);
         }
 
         .tab-btn:active {
             transform: scale(0.95);
-        }
-
-        .tab-btn.active {
-            transform: translateY(-3px) scale(1.02);
-            border-color: rgba(255, 255, 255, 0.12);
-            background: rgba(255, 255, 255, 0.05);
         }
 
         /* Иконки SVG */
@@ -192,7 +224,7 @@
             stroke-width: 1.8;
             stroke-linecap: round;
             stroke-linejoin: round;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             z-index: 1;
         }
@@ -213,10 +245,10 @@
         }
 
         .tab-btn.active .tab-label {
-            opacity: 0.8;
+            opacity: 0.9;
         }
 
-        /* Цвета для активных вкладок */
+        /* Цвета иконок */
         .tab-btn[data-tab="movies"] .tab-icon {
             stroke: rgba(255, 255, 255, 0.25);
         }
@@ -231,57 +263,46 @@
 
         .tab-btn[data-tab="movies"].active .tab-icon {
             stroke: #ff6b6b;
-            filter: drop-shadow(0 0 12px rgba(255, 107, 107, 0.2));
+            filter: drop-shadow(0 0 15px rgba(255, 107, 107, 0.3));
         }
 
         .tab-btn[data-tab="series"].active .tab-icon {
             stroke: #4d96ff;
-            filter: drop-shadow(0 0 12px rgba(77, 150, 255, 0.2));
+            filter: drop-shadow(0 0 15px rgba(77, 150, 255, 0.3));
         }
 
         .tab-btn[data-tab="books"].active .tab-icon {
             stroke: #6bcb77;
-            filter: drop-shadow(0 0 12px rgba(107, 203, 119, 0.2));
-        }
-
-        .tab-btn[data-tab="movies"].active {
-            border-color: rgba(255, 107, 107, 0.2);
-            box-shadow: 0 4px 30px rgba(255, 107, 107, 0.05);
-        }
-
-        .tab-btn[data-tab="series"].active {
-            border-color: rgba(77, 150, 255, 0.2);
-            box-shadow: 0 4px 30px rgba(77, 150, 255, 0.05);
-        }
-
-        .tab-btn[data-tab="books"].active {
-            border-color: rgba(107, 203, 119, 0.2);
-            box-shadow: 0 4px 30px rgba(107, 203, 119, 0.05);
+            filter: drop-shadow(0 0 15px rgba(107, 203, 119, 0.3));
         }
 
         /* Индикатор активности */
         .tab-btn.active::after {
             content: '';
             position: absolute;
-            bottom: 6px;
+            bottom: 8px;
             left: 50%;
             transform: translateX(-50%);
-            width: 4px;
-            height: 4px;
+            width: 5px;
+            height: 5px;
             border-radius: 50%;
-            opacity: 0.6;
+            opacity: 0.7;
+            z-index: 1;
         }
 
         .tab-btn[data-tab="movies"].active::after {
             background: #ff6b6b;
+            box-shadow: 0 0 15px rgba(255, 107, 107, 0.4);
         }
 
         .tab-btn[data-tab="series"].active::after {
             background: #4d96ff;
+            box-shadow: 0 0 15px rgba(77, 150, 255, 0.4);
         }
 
         .tab-btn[data-tab="books"].active::after {
             background: #6bcb77;
+            box-shadow: 0 0 15px rgba(107, 203, 119, 0.4);
         }
 
         /* ============================================================
@@ -803,8 +824,8 @@
 
         @media (max-width: 400px) {
             .tab-btn {
-                width: 54px;
-                height: 54px;
+                width: 56px;
+                height: 56px;
             }
             .tab-icon {
                 width: 22px;
@@ -838,7 +859,7 @@
             <div class="time-indicator" id="timeIndicator">⚡ сейчас</div>
         </div>
 
-        <!-- ===== ВКЛАДКИ - СТИЛЬНЫЕ ИКОНКИ SVG ===== -->
+        <!-- ===== ВКЛАДКИ - С ЦВЕТНЫМ ФОНОМ ===== -->
         <div class="tabs">
             <!-- Фильмы -->
             <button class="tab-btn active" data-tab="movies" onclick="switchTab('movies')" title="Фильмы">
@@ -947,9 +968,25 @@
         console.log('🔑 API ключ установлен:', KINOPOISK_API_KEY ? '✅' : '❌');
 
         // =============================================================
-        // 3. СМЕНА ЦВЕТА
+        // 3. ЦВЕТНЫЕ ГРАДИЕНТЫ ФОНА
         // =============================================================
-        var gradients = [
+        var tabColors = {
+            'movies': {
+                bg: 'linear-gradient(135deg, #1a0a0a 0%, #0a0a0f 50%, #0a0a0f 100%)',
+                overlay: 'rgba(255, 107, 107, 0.05)'
+            },
+            'series': {
+                bg: 'linear-gradient(135deg, #0a0a1a 0%, #0a0a0f 50%, #0a0a0f 100%)',
+                overlay: 'rgba(77, 150, 255, 0.05)'
+            },
+            'books': {
+                bg: 'linear-gradient(135deg, #0a1a0a 0%, #0a0a0f 50%, #0a0a0f 100%)',
+                overlay: 'rgba(107, 203, 119, 0.05)'
+            }
+        };
+
+        // Динамические градиенты для времени суток
+        var timeGradients = [
             'linear-gradient(135deg, #0a0a1a 0%, #1a0a2e 50%, #0a1a2e 100%)',
             'linear-gradient(135deg, #0a0a1a 0%, #1a0a0a 50%, #2e1a0a 100%)',
             'linear-gradient(135deg, #0a0a1a 0%, #0a1a1a 50%, #0a2e1a 100%)',
@@ -976,22 +1013,36 @@
             'linear-gradient(135deg, #0a0a1a 0%, #2e0a0a 50%, #3a1a0a 100%)'
         ];
 
-        function updateGradient() {
-            var now = new Date();
-            var hour = now.getHours();
-            var gradient = gradients[hour] || gradients[0];
-            document.getElementById('gradientBg').style.background = gradient;
+        function updateBackground(tab) {
+            var bg = document.getElementById('gradientBg');
+            var overlay = document.querySelector('.gradient-overlay');
+            
+            if (tab && tabColors[tab]) {
+                // При переключении вкладки - цветной фон
+                bg.style.background = tabColors[tab].bg;
+                overlay.style.background = tabColors[tab].overlay;
+                overlay.style.backdropFilter = 'blur(80px)';
+            } else {
+                // По умолчанию - динамический градиент по времени
+                var now = new Date();
+                var hour = now.getHours();
+                var gradient = timeGradients[hour] || timeGradients[0];
+                bg.style.background = gradient;
+                overlay.style.background = 'rgba(10, 10, 15, 0.65)';
+                overlay.style.backdropFilter = 'blur(80px)';
+            }
+        }
 
+        function updateTime() {
+            var now = new Date();
             var timeStr = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
             document.getElementById('timeIndicator').textContent = '⚡ ' + timeStr;
         }
 
-        updateGradient();
-        setInterval(updateGradient, 3600000);
-
-        document.addEventListener('visibilitychange', function() {
-            if (!document.hidden) updateGradient();
-        });
+        // Инициализация
+        updateBackground('movies');
+        updateTime();
+        setInterval(updateTime, 10000);
 
         // =============================================================
         // 4. СОСТОЯНИЕ
@@ -1018,6 +1069,9 @@
             document.querySelectorAll('.tab-btn').forEach(function(btn) {
                 btn.classList.toggle('active', btn.dataset.tab === tab);
             });
+
+            // Меняем фон
+            updateBackground(tab);
 
             var placeholders = {
                 'movies': 'введите название фильма...',
@@ -1134,7 +1188,7 @@
         }
 
         // =============================================================
-        // 9. ОТОБРАЖЕНИЕ ФИЛЬМОВ
+        // 9-10. ОТОБРАЖЕНИЕ (остается без изменений)
         // =============================================================
         function displayMovies(movies) {
             results.classList.add('active');
@@ -1206,9 +1260,6 @@
             }
         }
 
-        // =============================================================
-        // 10. ОТОБРАЖЕНИЕ КНИГ
-        // =============================================================
         function displayBooks(books) {
             results.classList.add('active');
             resultsCount.textContent = books.length + ' книг';
@@ -1278,8 +1329,8 @@
         }
 
         console.log('✦ KINOPOISK RUS ✦');
-        console.log('✦ Цвет обновлён: ' + new Date().toLocaleTimeString('ru-RU'));
         console.log('✦ Вкладка: ' + currentTab);
+        console.log('✦ Цветной фон активен!');
     </script>
 </body>
 </html>
