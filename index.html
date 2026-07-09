@@ -111,11 +111,11 @@
         }
 
         /* ============================================================
-           ВКЛАДКИ - ТОЛЬКО ИКОНКИ
+           ВКЛАДКИ - СТИЛЬНЫЕ ИКОНКИ
            ============================================================ */
         .tabs {
             display: flex;
-            gap: 8px;
+            gap: 12px;
             margin: 12px 0 18px;
             justify-content: center;
             flex-wrap: wrap;
@@ -123,67 +123,165 @@
 
         .tab-btn {
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            width: 52px;
-            height: 52px;
+            gap: 4px;
+            width: 64px;
+            height: 64px;
             padding: 0;
-            background: rgba(255, 255, 255, 0.04);
-            color: rgba(255, 255, 255, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 50%;
-            font-size: 24px;
+            background: rgba(255, 255, 255, 0.03);
+            color: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 16px;
             cursor: pointer;
-            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             position: relative;
+            overflow: hidden;
+        }
+
+        /* Градиентный фон при наведении */
+        .tab-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 16px;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .tab-btn:hover::before {
+            opacity: 1;
+        }
+
+        .tab-btn[data-tab="movies"]::before {
+            background: linear-gradient(135deg, rgba(255, 107, 107, 0.08), rgba(255, 107, 107, 0.02));
+        }
+
+        .tab-btn[data-tab="series"]::before {
+            background: linear-gradient(135deg, rgba(77, 150, 255, 0.08), rgba(77, 150, 255, 0.02));
+        }
+
+        .tab-btn[data-tab="books"]::before {
+            background: linear-gradient(135deg, rgba(107, 203, 119, 0.08), rgba(107, 203, 119, 0.02));
         }
 
         .tab-btn:hover {
-            background: rgba(255, 255, 255, 0.08);
-            color: rgba(255, 255, 255, 0.6);
-            transform: translateY(-2px);
+            transform: translateY(-3px) scale(1.02);
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .tab-btn:active {
+            transform: scale(0.95);
         }
 
         .tab-btn.active {
-            background: rgba(255, 255, 255, 0.1);
-            color: #ffffff;
-            border-color: rgba(255, 255, 255, 0.15);
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.05);
-            transform: translateY(-2px);
+            transform: translateY(-3px) scale(1.02);
+            border-color: rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, 0.05);
         }
 
-        .tab-btn.active::after {
-            content: '';
-            position: absolute;
-            bottom: -4px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: #ffffff;
+        /* Иконки SVG */
+        .tab-icon {
+            width: 28px;
+            height: 28px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            z-index: 1;
+        }
+
+        .tab-btn .tab-label {
+            font-size: 8px;
+            font-weight: 400;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
             opacity: 0.3;
+            transition: all 0.4s ease;
+            position: relative;
+            z-index: 1;
         }
 
-        /* Индивидуальные цвета для активных вкладок */
+        .tab-btn:hover .tab-label {
+            opacity: 0.6;
+        }
+
+        .tab-btn.active .tab-label {
+            opacity: 0.8;
+        }
+
+        /* Цвета для активных вкладок */
+        .tab-btn[data-tab="movies"] .tab-icon {
+            stroke: rgba(255, 255, 255, 0.25);
+        }
+
+        .tab-btn[data-tab="series"] .tab-icon {
+            stroke: rgba(255, 255, 255, 0.25);
+        }
+
+        .tab-btn[data-tab="books"] .tab-icon {
+            stroke: rgba(255, 255, 255, 0.25);
+        }
+
+        .tab-btn[data-tab="movies"].active .tab-icon {
+            stroke: #ff6b6b;
+            filter: drop-shadow(0 0 12px rgba(255, 107, 107, 0.2));
+        }
+
+        .tab-btn[data-tab="series"].active .tab-icon {
+            stroke: #4d96ff;
+            filter: drop-shadow(0 0 12px rgba(77, 150, 255, 0.2));
+        }
+
+        .tab-btn[data-tab="books"].active .tab-icon {
+            stroke: #6bcb77;
+            filter: drop-shadow(0 0 12px rgba(107, 203, 119, 0.2));
+        }
+
         .tab-btn[data-tab="movies"].active {
-            border-color: rgba(255, 107, 107, 0.3);
-            box-shadow: 0 0 25px rgba(255, 107, 107, 0.08);
-            color: #ff6b6b;
+            border-color: rgba(255, 107, 107, 0.2);
+            box-shadow: 0 4px 30px rgba(255, 107, 107, 0.05);
         }
 
         .tab-btn[data-tab="series"].active {
-            border-color: rgba(77, 150, 255, 0.3);
-            box-shadow: 0 0 25px rgba(77, 150, 255, 0.08);
-            color: #4d96ff;
+            border-color: rgba(77, 150, 255, 0.2);
+            box-shadow: 0 4px 30px rgba(77, 150, 255, 0.05);
         }
 
         .tab-btn[data-tab="books"].active {
-            border-color: rgba(107, 203, 119, 0.3);
-            box-shadow: 0 0 25px rgba(107, 203, 119, 0.08);
-            color: #6bcb77;
+            border-color: rgba(107, 203, 119, 0.2);
+            box-shadow: 0 4px 30px rgba(107, 203, 119, 0.05);
+        }
+
+        /* Индикатор активности */
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: 6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            opacity: 0.6;
+        }
+
+        .tab-btn[data-tab="movies"].active::after {
+            background: #ff6b6b;
+        }
+
+        .tab-btn[data-tab="series"].active::after {
+            background: #4d96ff;
+        }
+
+        .tab-btn[data-tab="books"].active::after {
+            background: #6bcb77;
         }
 
         /* ============================================================
@@ -415,9 +513,6 @@
             min-width: 0;
         }
 
-        /* ============================================================
-           ТЕКСТ В КАРТОЧКАХ
-           ============================================================ */
         .movie-title {
             font-size: 15px;
             font-weight: 600;
@@ -708,9 +803,15 @@
 
         @media (max-width: 400px) {
             .tab-btn {
-                width: 44px;
-                height: 44px;
-                font-size: 20px;
+                width: 54px;
+                height: 54px;
+            }
+            .tab-icon {
+                width: 22px;
+                height: 22px;
+            }
+            .tab-btn .tab-label {
+                font-size: 7px;
             }
             .search-btn {
                 padding: 13px 16px;
@@ -737,16 +838,44 @@
             <div class="time-indicator" id="timeIndicator">⚡ сейчас</div>
         </div>
 
-        <!-- ===== ВКЛАДКИ - ТОЛЬКО ИКОНКИ ===== -->
+        <!-- ===== ВКЛАДКИ - СТИЛЬНЫЕ ИКОНКИ SVG ===== -->
         <div class="tabs">
+            <!-- Фильмы -->
             <button class="tab-btn active" data-tab="movies" onclick="switchTab('movies')" title="Фильмы">
-                🎬
+                <svg class="tab-icon" viewBox="0 0 24 24">
+                    <rect x="2" y="4" width="20" height="16" rx="2"/>
+                    <line x1="8" y1="2" x2="8" y2="6"/>
+                    <line x1="16" y1="2" x2="16" y2="6"/>
+                    <line x1="2" y1="10" x2="22" y2="10"/>
+                    <polygon points="10,13 14,11 14,15 10,13"/>
+                </svg>
+                <span class="tab-label">Фильмы</span>
             </button>
+
+            <!-- Сериалы -->
             <button class="tab-btn" data-tab="series" onclick="switchTab('series')" title="Сериалы">
-                📺
+                <svg class="tab-icon" viewBox="0 0 24 24">
+                    <rect x="2" y="4" width="20" height="16" rx="2"/>
+                    <circle cx="8.5" cy="12" r="2.5"/>
+                    <circle cx="15.5" cy="12" r="2.5"/>
+                    <line x1="6" y1="2" x2="6" y2="4"/>
+                    <line x1="18" y1="2" x2="18" y2="4"/>
+                    <line x1="2" y1="8" x2="22" y2="8"/>
+                </svg>
+                <span class="tab-label">Сериалы</span>
             </button>
+
+            <!-- Книги -->
             <button class="tab-btn" data-tab="books" onclick="switchTab('books')" title="Книги">
-                📚
+                <svg class="tab-icon" viewBox="0 0 24 24">
+                    <path d="M4 6h16v14H4z"/>
+                    <line x1="8" y1="4" x2="8" y2="6"/>
+                    <line x1="16" y1="4" x2="16" y2="6"/>
+                    <path d="M8 10l4 2 4-2v6l-4 2-4-2z"/>
+                    <line x1="8" y1="10" x2="8" y2="16"/>
+                    <line x1="16" y1="10" x2="16" y2="16"/>
+                </svg>
+                <span class="tab-label">Книги</span>
             </button>
         </div>
 
@@ -818,7 +947,7 @@
         console.log('🔑 API ключ установлен:', KINOPOISK_API_KEY ? '✅' : '❌');
 
         // =============================================================
-        // 3. СМЕНА ЦВЕТА КАЖДЫЙ ЧАС
+        // 3. СМЕНА ЦВЕТА
         // =============================================================
         var gradients = [
             'linear-gradient(135deg, #0a0a1a 0%, #1a0a2e 50%, #0a1a2e 100%)',
