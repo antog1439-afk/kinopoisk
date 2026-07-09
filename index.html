@@ -111,40 +111,79 @@
         }
 
         /* ============================================================
-           ВКЛАДКИ
+           ВКЛАДКИ - ТОЛЬКО ИКОНКИ
            ============================================================ */
         .tabs {
             display: flex;
-            gap: 6px;
-            margin: 12px 0 16px;
+            gap: 8px;
+            margin: 12px 0 18px;
             justify-content: center;
             flex-wrap: wrap;
         }
 
         .tab-btn {
-            padding: 8px 20px;
-            background: rgba(255, 255, 255, 0.05);
-            color: rgba(255, 255, 255, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 400;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 52px;
+            height: 52px;
+            padding: 0;
+            background: rgba(255, 255, 255, 0.04);
+            color: rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+            font-size: 24px;
             cursor: pointer;
             transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-            letter-spacing: 0.3px;
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
+            position: relative;
         }
 
         .tab-btn:hover {
             background: rgba(255, 255, 255, 0.08);
-            color: rgba(255, 255, 255, 0.7);
+            color: rgba(255, 255, 255, 0.6);
+            transform: translateY(-2px);
         }
 
         .tab-btn.active {
             background: rgba(255, 255, 255, 0.1);
             color: #ffffff;
             border-color: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.05);
+            transform: translateY(-2px);
+        }
+
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #ffffff;
+            opacity: 0.3;
+        }
+
+        /* Индивидуальные цвета для активных вкладок */
+        .tab-btn[data-tab="movies"].active {
+            border-color: rgba(255, 107, 107, 0.3);
+            box-shadow: 0 0 25px rgba(255, 107, 107, 0.08);
+            color: #ff6b6b;
+        }
+
+        .tab-btn[data-tab="series"].active {
+            border-color: rgba(77, 150, 255, 0.3);
+            box-shadow: 0 0 25px rgba(77, 150, 255, 0.08);
+            color: #4d96ff;
+        }
+
+        .tab-btn[data-tab="books"].active {
+            border-color: rgba(107, 203, 119, 0.3);
+            box-shadow: 0 0 25px rgba(107, 203, 119, 0.08);
+            color: #6bcb77;
         }
 
         /* ============================================================
@@ -377,7 +416,7 @@
         }
 
         /* ============================================================
-           ТЕКСТ В КАРТОЧКАХ - УЛУЧШЕННАЯ ЧИТАЕМОСТЬ
+           ТЕКСТ В КАРТОЧКАХ
            ============================================================ */
         .movie-title {
             font-size: 15px;
@@ -668,12 +707,10 @@
         }
 
         @media (max-width: 400px) {
-            .tabs {
-                gap: 4px;
-            }
             .tab-btn {
-                padding: 6px 14px;
-                font-size: 11px;
+                width: 44px;
+                height: 44px;
+                font-size: 20px;
             }
             .search-btn {
                 padding: 13px 16px;
@@ -700,11 +737,17 @@
             <div class="time-indicator" id="timeIndicator">⚡ сейчас</div>
         </div>
 
-        <!-- ===== ВКЛАДКИ ===== -->
+        <!-- ===== ВКЛАДКИ - ТОЛЬКО ИКОНКИ ===== -->
         <div class="tabs">
-            <button class="tab-btn active" data-tab="movies" onclick="switchTab('movies')">🎬 Фильмы</button>
-            <button class="tab-btn" data-tab="series" onclick="switchTab('series')">📺 Сериалы</button>
-            <button class="tab-btn" data-tab="books" onclick="switchTab('books')">📚 Книги</button>
+            <button class="tab-btn active" data-tab="movies" onclick="switchTab('movies')" title="Фильмы">
+                🎬
+            </button>
+            <button class="tab-btn" data-tab="series" onclick="switchTab('series')" title="Сериалы">
+                📺
+            </button>
+            <button class="tab-btn" data-tab="books" onclick="switchTab('books')" title="Книги">
+                📚
+            </button>
         </div>
 
         <!-- ===== ПОИСК ===== -->
@@ -768,13 +811,11 @@
         }
 
         // =============================================================
-        // 2. КОНФИГУРАЦИЯ - ВСТАВЛЕН ТВОЙ КЛЮЧ
+        // 2. КОНФИГУРАЦИЯ
         // =============================================================
         var KINOPOISK_API_KEY = 'P2RCP6B-3V24Q4W-N7RQSW3-0488PH9';
 
-        // Для отладки
         console.log('🔑 API ключ установлен:', KINOPOISK_API_KEY ? '✅' : '❌');
-        console.log('🔑 Длина ключа:', KINOPOISK_API_KEY.length);
 
         // =============================================================
         // 3. СМЕНА ЦВЕТА КАЖДЫЙ ЧАС
@@ -866,7 +907,7 @@
         }
 
         // =============================================================
-        // 7. ПОИСК ФИЛЬМОВ И СЕРИАЛОВ
+        // 7. ПОИСК
         // =============================================================
         function search(query) {
             query = query.trim();
@@ -893,7 +934,6 @@
                 url += '&type=series';
             }
 
-            // Очищаем ключ от невидимых символов
             var cleanKey = KINOPOISK_API_KEY.replace(/[^A-Za-z0-9\-]/g, '');
 
             fetch(url, {
@@ -905,10 +945,10 @@
             })
             .then(function(response) {
                 if (response.status === 401) {
-                    throw new Error('❌ Неверный API ключ. Получите ключ на https://api.kinopoisk.dev/');
+                    throw new Error('❌ Неверный API ключ');
                 }
                 if (response.status === 429) {
-                    throw new Error('❌ Слишком много запросов. Подождите немного.');
+                    throw new Error('❌ Слишком много запросов');
                 }
                 if (!response.ok) {
                     throw new Error('Ошибка ' + response.status);
@@ -934,7 +974,7 @@
         }
 
         // =============================================================
-        // 8. ПОИСК КНИГ (OpenLibrary)
+        // 8. ПОИСК КНИГ
         // =============================================================
         function searchBooks(query) {
             var url = 'https://openlibrary.org/search.json?q=' + encodeURIComponent(query) + '&limit=15';
@@ -965,7 +1005,7 @@
         }
 
         // =============================================================
-        // 9. ОТОБРАЖЕНИЕ ФИЛЬМОВ И СЕРИАЛОВ
+        // 9. ОТОБРАЖЕНИЕ ФИЛЬМОВ
         // =============================================================
         function displayMovies(movies) {
             results.classList.add('active');
