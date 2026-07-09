@@ -630,30 +630,30 @@
         // 2. СМЕНА ЦВЕТА КАЖДЫЙ ЧАС
         // =============================================================
         const gradients = [
-            'linear-gradient(135deg, #0a0a1a 0%, #1a0a2e 50%, #0a1a2e 100%)',   // 00:00 — фиолетовый
-            'linear-gradient(135deg, #0a0a1a 0%, #1a0a0a 50%, #2e1a0a 100%)',   // 01:00 — тёплый
-            'linear-gradient(135deg, #0a0a1a 0%, #0a1a1a 50%, #0a2e1a 100%)',   // 02:00 — зелёный
-            'linear-gradient(135deg, #0a0a1a 0%, #0a1a2e 50%, #0a2e3a 100%)',   // 03:00 — синий
-            'linear-gradient(135deg, #0a0a1a 0%, #1a0a2e 50%, #2e0a3a 100%)',   // 04:00 — пурпурный
-            'linear-gradient(135deg, #0a0a1a 0%, #2e1a0a 50%, #3a2e0a 100%)',   // 05:00 — золотой
-            'linear-gradient(135deg, #0a0a1a 0%, #1a1a0a 50%, #2e2e0a 100%)',   // 06:00 — оливковый
-            'linear-gradient(135deg, #0a0a1a 0%, #0a1a0a 50%, #0a2e0a 100%)',   // 07:00 — изумрудный
-            'linear-gradient(135deg, #0a0a1a 0%, #0a0a2e 50%, #1a0a3a 100%)',   // 08:00 — индиго
-            'linear-gradient(135deg, #0a0a1a 0%, #2e0a1a 50%, #3a0a2e 100%)',   // 09:00 — розовый
-            'linear-gradient(135deg, #0a0a1a 0%, #0a2e1a 50%, #0a3a2e 100%)',   // 10:00 — мятный
-            'linear-gradient(135deg, #0a0a1a 0%, #1a2e0a 50%, #2e3a0a 100%)',   // 11:00 — лайм
-            'linear-gradient(135deg, #0a0a1a 0%, #2e0a0a 50%, #3a1a0a 100%)',   // 12:00 — красный
-            'linear-gradient(135deg, #0a0a1a 0%, #0a0a2e 50%, #0a1a3a 100%)',   // 13:00 — глубокий синий
-            'linear-gradient(135deg, #0a0a1a 0%, #1a0a1a 50%, #2e0a2e 100%)',   // 14:00 — маджента
-            'linear-gradient(135deg, #0a0a1a 0%, #0a1a2e 50%, #0a2e3a 100%)',   // 15:00 — циан
-            'linear-gradient(135deg, #0a0a1a 0%, #2e1a0a 50%, #3a2e1a 100%)',   // 16:00 — янтарный
-            'linear-gradient(135deg, #0a0a1a 0%, #0a1a1a 50%, #0a2e2e 100%)',   // 17:00 — бирюзовый
-            'linear-gradient(135deg, #0a0a1a 0%, #1a0a2e 50%, #2e0a3a 100%)',   // 18:00 — фиолетовый
-            'linear-gradient(135deg, #0a0a1a 0%, #2e0a1a 50%, #3a0a2e 100%)',   // 19:00 — пурпурный
-            'linear-gradient(135deg, #0a0a1a 0%, #1a1a0a 50%, #2e2e0a 100%)',   // 20:00 — золотой
-            'linear-gradient(135deg, #0a0a1a 0%, #0a2e1a 50%, #0a3a2e 100%)',   // 21:00 — изумрудный
-            'linear-gradient(135deg, #0a0a1a 0%, #0a0a2e 50%, #1a0a3a 100%)',   // 22:00 — индиго
-            'linear-gradient(135deg, #0a0a1a 0%, #2e0a0a 50%, #3a1a0a 100%)'    // 23:00 — красный
+            'linear-gradient(135deg, #0a0a1a 0%, #1a0a2e 50%, #0a1a2e 100%)',
+            'linear-gradient(135deg, #0a0a1a 0%, #1a0a0a 50%, #2e1a0a 100%)',
+            'linear-gradient(135deg, #0a0a1a 0%, #0a1a1a 50%, #0a2e1a 100%)',
+            'linear-gradient(135deg, #0a0a1a 0%, #0a1a2e 50%, #0a2e3a 100%)',
+            'linear-gradient(135deg, #0a0a1a 0%, #1a0a2e 50%, #2e0a3a 100%)',
+            'linear-gradient(135deg, #0a0a1a 0%, #2e1a0a 50%, #3a2e0a 100%)',
+            'linear-gradient(135deg, #0a0a1a 0%, #1a1a0a 50%, #2e2e0a 100%)',
+            'linear-gradient(135deg, #0a0a1a 0%, #0a1a0a 50%, #0a2e0a 100%)',
+            'linear-gradient(135deg, #0a0a1a 0%, #0a0a2e 50%, #1a0a3a 100%)',
+            'linear-gradient(135deg, #0a0a1a 0%, #2e0a1a 50%, #3a0a2e 100%)',
+            'linear-gradient(135deg, #0a0a1a 0%, #0a2e1a 50%, #0a3a2e 100%)',
+            'linear-gradient(135deg, #0a0a1a 0%, #1a2e0a 50%, #2e3a0a 100%)',
+            'linear-gradient(135deg, #0a0a1a 0%, #2e0a0a 50%, #3a1a0a 100%)',
+            'linear-gradient(135deg, #0a0a1a 0%, #0a0a2e 50%, #0a1a3a 100%)',
+            'linear-gradient(135deg, #0a0a1a 0%, #1a0a1a 50%, #2e0a2e 100%)',
+            'linear-gradient(135deg, #0a0a1a 0%, #0a1a2e 50%, #0a2e3a 100%)',
+            'linear-gradient(135deg, #0a0a1a 0%, #2e1a0a 50%, #3a2e1a 100%)',
+            'linear-gradient(135deg, #0a0a1a 0%, #0a1a1a 50%, #0a2e2e 100%)',
+            'linear-gradient(135deg, #0a0a1a 0%, #1a0a2e 50%, #2e0a3a 100%)',
+            'linear-gradient(135deg, #0a0a1a 0%, #2e0a1a 50%, #3a0a2e 100%)',
+            'linear-gradient(135deg, #0a0a1a 0%, #1a1a0a 50%, #2e2e0a 100%)',
+            'linear-gradient(135deg, #0a0a1a 0%, #0a2e1a 50%, #0a3a2e 100%)',
+            'linear-gradient(135deg, #0a0a1a 0%, #0a0a2e 50%, #1a0a3a 100%)',
+            'linear-gradient(135deg, #0a0a1a 0%, #2e0a0a 50%, #3a1a0a 100%)'
         ];
 
         function updateGradient() {
@@ -662,18 +662,13 @@
             const gradient = gradients[hour] || gradients[0];
             document.getElementById('gradientBg').style.background = gradient;
 
-            // Обновляем индикатор времени
             const timeStr = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
-            document.getElementById('timeIndicator').textContent = `⚡ ${timeStr}`;
+            document.getElementById('timeIndicator').textContent = '⚡ ' + timeStr;
         }
 
-        // Запускаем смену цвета
         updateGradient();
-
-        // Обновляем каждый час (3600000 мс)
         setInterval(updateGradient, 3600000);
 
-        // Также обновляем при смене вкладки (для точности)
         document.addEventListener('visibilitychange', () => {
             if (!document.hidden) updateGradient();
         });
@@ -714,7 +709,7 @@
             resultsCount.textContent = '';
 
             try {
-                const url = `${API_URL}?query=${encodeURIComponent(query)}`;
+                const url = API_URL + '?query=' + encodeURIComponent(query);
                 const response = await fetch(url, {
                     method: 'GET',
                     headers: {
@@ -725,7 +720,7 @@
 
                 if (response.status === 401) throw new Error('неверный ключ API');
                 if (response.status === 429) throw new Error('слишком много запросов');
-                if (!response.ok) throw new Error(`ошибка ${response.status}`);
+                if (!response.ok) throw new Error('ошибка ' + response.status);
 
                 const data = await response.json();
 
@@ -738,7 +733,7 @@
 
             } catch (error) {
                 console.error('Ошибка:', error);
-                tg.showAlert(`❌ ${error.message}`);
+                tg.showAlert('❌ ' + error.message);
                 errorMessage.classList.add('active');
             } finally {
                 loadingSpinner.classList.remove('active');
@@ -751,23 +746,24 @@
         // =============================================================
         function displayMovies(movies) {
             results.classList.add('active');
-            resultsCount.textContent = `${movies.length} фильмов`;
+            resultsCount.textContent = movies.length + ' фильмов';
 
             movieGrid.innerHTML = '';
 
-            movies.forEach((movie, index) => {
+            for (let i = 0; i < movies.length; i++) {
+                const movie = movies[i];
                 const card = document.createElement('div');
                 card.className = 'movie-card';
-                card.style.animationDelay = `${0.04 + index * 0.04}s`;
+                card.style.animationDelay = (0.04 + i * 0.04) + 's';
 
                 const title = movie.name || movie.alternativeName || 'без названия';
                 const year = movie.year || '';
                 const rating = movie.rating?.kp || movie.rating?.imdb || null;
-                const genres = movie.genres?.map(g => g.name).slice(0, 3).join(', ') || '—';
-                const countries = movie.countries?.map(c => c.name).slice(0, 2).join(', ') || '—';
+                const genres = movie.genres?.map(function(g) { return g.name; }).slice(0, 3).join(', ') || '—';
+                const countries = movie.countries?.map(function(c) { return c.name; }).slice(0, 2).join(', ') || '—';
                 const description = movie.description || movie.shortDescription || '';
                 const poster = movie.poster?.url || movie.poster?.previewUrl || null;
-                const link = `https://www.kinopoisk.ru/film/${movie.id}/`;
+                const link = 'https://www.kinopoisk.ru/film/' + movie.id + '/';
 
                 let ratingClass = '';
                 let ratingText = '—';
@@ -778,54 +774,54 @@
                     else ratingClass = 'low';
                 }
 
-                const posterHtml = poster
-                    ? `<img class="movie-poster" src="${poster}" alt="${title}" loading="lazy" onerror="this.className='movie-poster placeholder'; this.textContent='◈'">`
-                    : `<div class="movie-poster placeholder">◈</div>`;
+                var posterHtml;
+                if (poster) {
+                    posterHtml = '<img class="movie-poster" src="' + poster + '" alt="' + title + '" loading="lazy" onerror="this.className=\'movie-poster placeholder\'; this.textContent=\'◈\'">';
+                } else {
+                    posterHtml = '<div class="movie-poster placeholder">◈</div>';
+                }
 
-                const ratingHtml = rating !== null
-                    ? `<span class="movie-rating ${ratingClass}">★ ${ratingText}</span>`
-                    : '';
+                var ratingHtml = '';
+                if (rating !== null) {
+                    ratingHtml = '<span class="movie-rating ' + ratingClass + '">★ ' + ratingText + '</span>';
+                }
 
-                const yearHtml = year ? `<span class="year">${year}</span>` : '';
-                const descHtml = description ? `<div class="movie-description">${description}</div>` : '';
+                var yearHtml = year ? '<span class="year">' + year + '</span>' : '';
+                var descHtml = description ? '<div class="movie-description">' + description + '</div>' : '';
 
-                card.innerHTML = `
-                    ${posterHtml}
-                    <div class="movie-info">
-                        <div>
-                            <div class="movie-title">
-                                ${title}
-                                ${yearHtml}
-                            </div>
-                            <div class="movie-meta">
-                                <span class="movie-meta-item">${genres}</span>
-                                <span class="movie-meta-item">${countries}</span>
-                            </div>
-                            ${ratingHtml}
-                            ${descHtml}
-                        </div>
-                        <a href="${link}" class="movie-link" target="_blank">→ кинопоиск</a>
-                    </div>
-                `;
+                card.innerHTML = 
+                    posterHtml +
+                    '<div class="movie-info">' +
+                        '<div>' +
+                            '<div class="movie-title">' + title + ' ' + yearHtml + '</div>' +
+                            '<div class="movie-meta">' +
+                                '<span class="movie-meta-item">' + genres + '</span>' +
+                                '<span class="movie-meta-item">' + countries + '</span>' +
+                            '</div>' +
+                            ratingHtml +
+                            descHtml +
+                        '</div>' +
+                        '<a href="' + link + '" class="movie-link" target="_blank">→ кинопоиск</a>' +
+                    '</div>';
 
-                card.addEventListener('click', (e) => {
+                card.addEventListener('click', function(e) {
                     if (!e.target.closest('.movie-link')) {
                         tg.openLink(link);
                     }
                 });
 
                 movieGrid.appendChild(card);
-            });
+            }
         }
 
         // =============================================================
         // 7. ОБРАБОТЧИКИ
         // =============================================================
-        searchButton.addEventListener('click', () => {
+        searchButton.addEventListener('click', function() {
             searchMovies(searchInput.value);
         });
 
-        searchInput.addEventListener('keypress', (e) => {
+        searchInput.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 searchMovies(searchInput.value);
             }
@@ -836,7 +832,7 @@
         }
 
         console.log('✦ KINOPOISK RUS загружен ✦');
-        console.log(`✦ цвет обновлён: ${new Date().toLocaleTimeString('ru-RU')}`);
+        console.log('✦ цвет обновлён: ' + new Date().toLocaleTimeString('ru-RU'));
     </script>
 </body>
 </html>
