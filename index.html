@@ -111,12 +111,48 @@
         }
 
         /* ============================================================
+           ВКЛАДКИ (фильмы / сериалы / книги)
+           ============================================================ */
+        .tabs {
+            display: flex;
+            gap: 6px;
+            margin: 12px 0 16px;
+            justify-content: center;
+        }
+
+        .tab-btn {
+            padding: 8px 20px;
+            background: rgba(255, 255, 255, 0.02);
+            color: rgba(255, 255, 255, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 400;
+            cursor: pointer;
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            letter-spacing: 0.3px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .tab-btn:hover {
+            background: rgba(255, 255, 255, 0.04);
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .tab-btn.active {
+            background: rgba(255, 255, 255, 0.06);
+            color: #ffffff;
+            border-color: rgba(255, 255, 255, 0.06);
+        }
+
+        /* ============================================================
            ПОИСК
            ============================================================ */
         .search-wrapper {
             display: flex;
             gap: 8px;
-            margin: 16px 0 20px;
+            margin: 8px 0 20px;
         }
 
         .search-input-wrap {
@@ -167,7 +203,6 @@
             color: rgba(255, 255, 255, 0.35);
         }
 
-        /* ===== КНОПКА ПОИСКА (МИНИМАЛЬНАЯ) ===== */
         .search-btn {
             padding: 13px 22px;
             background: rgba(255, 255, 255, 0.03);
@@ -327,7 +362,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
+            font-size: 28px;
             color: rgba(255, 255, 255, 0.05);
             background: rgba(255, 255, 255, 0.015);
         }
@@ -413,7 +448,6 @@
             font-weight: 300;
         }
 
-        /* ===== ССЫЛКА (МИНИМАЛЬНАЯ) ===== */
         .movie-link {
             display: inline-flex;
             align-items: center;
@@ -594,8 +628,15 @@
             <div class="logo">
                 KINO<span class="highlight">POISK</span> RUS
             </div>
-            <div class="subtitle">кинопоиск в телеграме</div>
+            <div class="subtitle">фильмы · сериалы · книги</div>
             <div class="time-indicator" id="timeIndicator">⚡ сейчас</div>
+        </div>
+
+        <!-- ===== ВКЛАДКИ ===== -->
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="movies" onclick="switchTab('movies')">🎬 Фильмы</button>
+            <button class="tab-btn" data-tab="series" onclick="switchTab('series')">📺 Сериалы</button>
+            <button class="tab-btn" data-tab="books" onclick="switchTab('books')">📚 Книги</button>
         </div>
 
         <!-- ===== ПОИСК ===== -->
@@ -606,7 +647,7 @@
                     type="text"
                     class="search-input"
                     id="searchInput"
-                    placeholder="введите название фильма..."
+                    placeholder="введите название..."
                     autofocus
                 >
             </div>
@@ -712,7 +753,12 @@
         var API_URL = 'https://api.poiskkino.dev/v1.4/movie/search';
 
         // =============================================================
-        // 4. ЭЛЕМЕНТЫ
+        // 4. СОСТОЯНИЕ
+        // =============================================================
+        var currentTab = 'movies';
+
+        // =============================================================
+        // 5. ЭЛЕМЕНТЫ
         // =============================================================
         var searchInput = document.getElementById('searchInput');
         var searchBtn = document.getElementById('searchBtn');
@@ -724,12 +770,45 @@
         var welcome = document.getElementById('welcome');
 
         // =============================================================
-        // 5. ПОИСК
+        // 6. ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК
+        // =============================================================
+        function switchTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.tab-btn').forEach(function(btn) {
+                btn.classList.toggle('active', btn.dataset.tab === tab);
+            });
+
+            // Меняем placeholder
+            var placeholders = {
+                'movies': 'введите название фильма...',
+                'series': 'введите название сериала...',
+                'books': 'введите название книги...'
+            };
+            searchInput.placeholder = placeholders[tab] || 'введите название...';
+
+            // Очищаем результаты
+            results.classList.remove('active');
+            error.classList.remove('active');
+            movieGrid.innerHTML = '';
+            resultsCount.textContent = '';
+            welcome.style.display = 'block';
+            searchInput.value = '';
+            searchInput.focus();
+        }
+
+        // =============================================================
+        // 7. ПОИСК
         // =============================================================
         function searchMovies(query) {
             query = query.trim();
             if (!query) {
-                tg.showAlert('введите название фильма');
+                tg.showAlert('введите название');
+                return;
+            }
+
+            // Если вкладка "Книги" — используем имитацию поиска книг
+            if (currentTab === 'books') {
+                searchBooks(query);
                 return;
             }
 
@@ -741,7 +820,11 @@
             movieGrid.innerHTML = '';
             resultsCount.textContent = '';
 
+            // Для сериалов добавляем фильтр по типу
             var url = API_URL + '?query=' + encodeURIComponent(query);
+            if (currentTab === 'series') {
+                url += '&type=series';
+            }
 
             fetch(url, {
                 method: 'GET',
@@ -761,7 +844,7 @@
                     error.classList.add('active');
                     return;
                 }
-                displayMovies(data.docs);
+                displayMovies(data.docs, currentTab);
             })
             .catch(function(err) {
                 console.error('Ошибка:', err);
@@ -775,11 +858,102 @@
         }
 
         // =============================================================
-        // 6. ОТОБРАЖЕНИЕ
+        // 8. ПОИСК КНИГ (имитация через внешний API)
         // =============================================================
-        function displayMovies(movies) {
+        function searchBooks(query) {
+            loader.classList.add('active');
+            searchBtn.disabled = true;
+            results.classList.remove('active');
+            error.classList.remove('active');
+            welcome.style.display = 'none';
+            movieGrid.innerHTML = '';
+            resultsCount.textContent = '';
+
+            // Используем Open Library API для поиска книг
+            var url = 'https://openlibrary.org/search.json?q=' + encodeURIComponent(query) + '&limit=12';
+
+            fetch(url)
+            .then(function(response) {
+                if (!response.ok) throw new Error('ошибка ' + response.status);
+                return response.json();
+            })
+            .then(function(data) {
+                if (!data.docs || data.docs.length === 0) {
+                    error.classList.add('active');
+                    return;
+                }
+                displayBooks(data.docs);
+            })
+            .catch(function(err) {
+                console.error('Ошибка:', err);
+                tg.showAlert('❌ ' + err.message);
+                error.classList.add('active');
+            })
+            .finally(function() {
+                loader.classList.remove('active');
+                searchBtn.disabled = false;
+            });
+        }
+
+        // =============================================================
+        // 9. ОТОБРАЖЕНИЕ КНИГ
+        // =============================================================
+        function displayBooks(books) {
             results.classList.add('active');
-            resultsCount.textContent = movies.length + ' фильмов';
+            resultsCount.textContent = books.length + ' книг';
+            movieGrid.innerHTML = '';
+
+            for (var i = 0; i < books.length; i++) {
+                var book = books[i];
+                var card = document.createElement('div');
+                card.className = 'movie-card';
+                card.style.animationDelay = (0.03 + i * 0.03) + 's';
+
+                var title = book.title || 'без названия';
+                var author = book.author_name ? book.author_name.slice(0, 2).join(', ') : 'автор неизвестен';
+                var year = book.first_publish_year || '';
+                var coverId = book.cover_i || null;
+                var coverUrl = coverId ? 'https://covers.openlibrary.org/b/id/' + coverId + '-M.jpg' : null;
+
+                var posterHtml;
+                if (coverUrl) {
+                    posterHtml = '<img class="movie-poster" src="' + coverUrl + '" alt="' + title + '" loading="lazy" onerror="this.className=\'movie-poster empty\'; this.textContent=\'📚\'">';
+                } else {
+                    posterHtml = '<div class="movie-poster empty">📚</div>';
+                }
+
+                var yearHtml = year ? '<span class="year">' + year + '</span>' : '';
+
+                card.innerHTML =
+                    posterHtml +
+                    '<div class="movie-info">' +
+                        '<div>' +
+                            '<div class="movie-title">' + title + ' ' + yearHtml + '</div>' +
+                            '<div class="movie-meta">' +
+                                '<span class="movie-meta-item">✍️ ' + author + '</span>' +
+                            '</div>' +
+                        '</div>' +
+                        '<a href="https://openlibrary.org' + (book.key || '') + '" class="movie-link" target="_blank">→ открыть</a>' +
+                    '</div>';
+
+                card.addEventListener('click', function(e) {
+                    if (!e.target.closest('.movie-link')) {
+                        var link = 'https://openlibrary.org' + (book.key || '');
+                        tg.openLink(link);
+                    }
+                });
+
+                movieGrid.appendChild(card);
+            }
+        }
+
+        // =============================================================
+        // 10. ОТОБРАЖЕНИЕ ФИЛЬМОВ И СЕРИАЛОВ
+        // =============================================================
+        function displayMovies(movies, tab) {
+            results.classList.add('active');
+            var label = tab === 'series' ? 'сериалов' : 'фильмов';
+            resultsCount.textContent = movies.length + ' ' + label;
             movieGrid.innerHTML = '';
 
             for (var i = 0; i < movies.length; i++) {
@@ -808,9 +982,9 @@
 
                 var posterHtml;
                 if (poster) {
-                    posterHtml = '<img class="movie-poster" src="' + poster + '" alt="' + title + '" loading="lazy" onerror="this.className=\'movie-poster empty\'; this.textContent=\'◈\'">';
+                    posterHtml = '<img class="movie-poster" src="' + poster + '" alt="' + title + '" loading="lazy" onerror="this.className=\'movie-poster empty\'; this.textContent=\'' + (tab === 'series' ? '📺' : '🎬') + '\'">';
                 } else {
-                    posterHtml = '<div class="movie-poster empty">◈</div>';
+                    posterHtml = '<div class="movie-poster empty">' + (tab === 'series' ? '📺' : '🎬') + '</div>';
                 }
 
                 var ratingHtml = '';
@@ -847,7 +1021,7 @@
         }
 
         // =============================================================
-        // 7. ОБРАБОТЧИКИ
+        // 11. ОБРАБОТЧИКИ
         // =============================================================
         searchBtn.addEventListener('click', function() {
             searchMovies(searchInput.value);
@@ -863,7 +1037,7 @@
             tg.close();
         }
 
-        console.log('✦ KINOPOISK RUS ✦');
+        console.log('✦ KINOPOISK RUS ✦ (фильмы · сериалы · книги)');
         console.log('✦ цвет обновлён: ' + new Date().toLocaleTimeString('ru-RU'));
     </script>
 </body>
