@@ -44,10 +44,6 @@
             background: radial-gradient(ellipse at center, #0a0a1a 0%, #0a0a2d 20%, #05051a 40%, #0a0a0f 70%, #0a0a0f 100%);
         }
 
-        body.bg-books #gradientBg {
-            background: radial-gradient(ellipse at center, #0a1a0a 0%, #0a2d0a 20%, #051a05 40%, #0a0a0f 70%, #0a0a0f 100%);
-        }
-
         .gradient-overlay {
             position: fixed;
             top: 0;
@@ -66,10 +62,6 @@
 
         body.bg-series .gradient-overlay {
             background: rgba(77, 150, 255, 0.06);
-        }
-
-        body.bg-books .gradient-overlay {
-            background: rgba(107, 203, 119, 0.06);
         }
 
         /* ============================================================
@@ -135,11 +127,11 @@
         }
 
         /* ============================================================
-           ВКЛАДКИ - ТОЛЬКО ИКОНКИ БЕЗ ТЕКСТА
+           ВКЛАДКИ - ТОЛЬКО ИКОНКИ
            ============================================================ */
         .tabs {
             display: flex;
-            gap: 12px;
+            gap: 16px;
             margin: 12px 0 18px;
             justify-content: center;
             flex-wrap: wrap;
@@ -185,10 +177,6 @@
             background: linear-gradient(135deg, rgba(77, 150, 255, 0.3), rgba(77, 150, 255, 0.05));
         }
 
-        .tab-btn[data-tab="books"]::before {
-            background: linear-gradient(135deg, rgba(107, 203, 119, 0.3), rgba(107, 203, 119, 0.05));
-        }
-
         .tab-btn[data-tab="movies"].active {
             background: rgba(255, 107, 107, 0.2);
             border-color: rgba(255, 107, 107, 0.3);
@@ -203,14 +191,6 @@
             box-shadow: 0 4px 30px rgba(77, 150, 255, 0.15);
             transform: translateY(-3px) scale(1.02);
             color: #4d96ff;
-        }
-
-        .tab-btn[data-tab="books"].active {
-            background: rgba(107, 203, 119, 0.2);
-            border-color: rgba(107, 203, 119, 0.3);
-            box-shadow: 0 4px 30px rgba(107, 203, 119, 0.15);
-            transform: translateY(-3px) scale(1.02);
-            color: #6bcb77;
         }
 
         .tab-btn:hover {
@@ -242,10 +222,6 @@
             stroke: rgba(255, 255, 255, 0.25);
         }
 
-        .tab-btn[data-tab="books"] .tab-icon {
-            stroke: rgba(255, 255, 255, 0.25);
-        }
-
         .tab-btn[data-tab="movies"].active .tab-icon {
             stroke: #ff6b6b;
             filter: drop-shadow(0 0 20px rgba(255, 107, 107, 0.4));
@@ -254,11 +230,6 @@
         .tab-btn[data-tab="series"].active .tab-icon {
             stroke: #4d96ff;
             filter: drop-shadow(0 0 20px rgba(77, 150, 255, 0.4));
-        }
-
-        .tab-btn[data-tab="books"].active .tab-icon {
-            stroke: #6bcb77;
-            filter: drop-shadow(0 0 20px rgba(107, 203, 119, 0.4));
         }
 
         .tab-btn.active::after {
@@ -282,11 +253,6 @@
         .tab-btn[data-tab="series"].active::after {
             background: #4d96ff;
             box-shadow: 0 0 15px rgba(77, 150, 255, 0.4);
-        }
-
-        .tab-btn[data-tab="books"].active::after {
-            background: #6bcb77;
-            box-shadow: 0 0 15px rgba(107, 203, 119, 0.4);
         }
 
         /* ============================================================
@@ -505,16 +471,6 @@
             border-color: rgba(77, 150, 255, 0.1);
         }
 
-        .bg-books .movie-card {
-            background: rgba(107, 203, 119, 0.05);
-            border-color: rgba(107, 203, 119, 0.06);
-        }
-
-        .bg-books .movie-card:hover {
-            background: rgba(107, 203, 119, 0.08);
-            border-color: rgba(107, 203, 119, 0.1);
-        }
-
         .movie-poster {
             width: 64px;
             height: 96px;
@@ -639,56 +595,6 @@
         .movie-link:hover {
             color: rgba(255, 255, 255, 0.55);
             border-bottom-color: rgba(255, 255, 255, 0.1);
-        }
-
-        /* ============================================================
-           КНИГИ
-           ============================================================ */
-        .book-author {
-            font-size: 12px;
-            color: rgba(255, 255, 255, 0.4);
-            font-weight: 300;
-            margin: 2px 0 4px;
-        }
-
-        .book-publisher {
-            font-size: 10px;
-            color: rgba(255, 255, 255, 0.25);
-            font-weight: 300;
-            letter-spacing: 0.3px;
-        }
-
-        .book-description {
-            font-size: 11px;
-            color: rgba(255, 255, 255, 0.35);
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            line-height: 1.5;
-            margin-top: 4px;
-            font-weight: 300;
-        }
-
-        .book-rating {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            padding: 1px 10px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 400;
-            background: rgba(255, 255, 255, 0.04);
-            color: rgba(255, 255, 255, 0.4);
-            width: fit-content;
-            margin: 2px 0;
-            border: 1px solid rgba(255, 255, 255, 0.04);
-        }
-
-        .book-rating.high {
-            color: #6bcb77;
-            border-color: rgba(107, 203, 119, 0.15);
-            background: rgba(107, 203, 119, 0.06);
         }
 
         /* ============================================================
@@ -865,7 +771,7 @@
             <div class="logo">
                 KINO<span class="highlight">POISK</span> RUS
             </div>
-            <div class="subtitle">фильмы · сериалы · книги</div>
+            <div class="subtitle">фильмы · сериалы</div>
             <div class="time-indicator" id="timeIndicator">⚡ сейчас</div>
         </div>
 
@@ -889,17 +795,6 @@
                     <line x1="6" y1="2" x2="6" y2="4"/>
                     <line x1="18" y1="2" x2="18" y2="4"/>
                     <line x1="2" y1="8" x2="22" y2="8"/>
-                </svg>
-            </button>
-
-            <button class="tab-btn" data-tab="books" onclick="switchTab('books')" title="Книги">
-                <svg class="tab-icon" viewBox="0 0 24 24">
-                    <path d="M4 6h16v14H4z"/>
-                    <line x1="8" y1="4" x2="8" y2="6"/>
-                    <line x1="16" y1="4" x2="16" y2="6"/>
-                    <path d="M8 10l4 2 4-2v6l-4 2-4-2z"/>
-                    <line x1="8" y1="10" x2="8" y2="16"/>
-                    <line x1="16" y1="10" x2="16" y2="16"/>
                 </svg>
             </button>
         </div>
@@ -979,23 +874,18 @@
         function switchTab(tab) {
             currentTab = tab;
             
-            // Обновляем кнопки
             document.querySelectorAll('.tab-btn').forEach(function(btn) {
                 btn.classList.toggle('active', btn.dataset.tab === tab);
             });
 
-            // Меняем фон
             document.body.className = 'bg-' + tab;
 
-            // Меняем placeholder
             var placeholders = {
                 'movies': 'введите название фильма...',
-                'series': 'введите название сериала...',
-                'books': 'введите название книги...'
+                'series': 'введите название сериала...'
             };
             document.getElementById('searchInput').placeholder = placeholders[tab] || 'введите название...';
 
-            // Очищаем результаты
             document.getElementById('results').classList.remove('active');
             document.getElementById('error').classList.remove('active');
             document.getElementById('movieGrid').innerHTML = '';
@@ -1014,7 +904,6 @@
             document.getElementById('timeIndicator').textContent = '⚡ ' + timeStr;
         }
 
-        // Инициализация
         switchTab('movies');
         updateTime();
         setInterval(updateTime, 10000);
@@ -1048,11 +937,6 @@
             welcome.style.display = 'none';
             movieGrid.innerHTML = '';
             resultsCount.textContent = '';
-
-            if (currentTab === 'books') {
-                searchBooks(query);
-                return;
-            }
 
             var url = 'https://api.poiskkino.dev/v1.4/movie/search?query=' + encodeURIComponent(query);
             if (currentTab === 'series') {
@@ -1099,38 +983,7 @@
         }
 
         // =============================================================
-        // 7. ПОИСК КНИГ
-        // =============================================================
-        function searchBooks(query) {
-            var url = 'https://openlibrary.org/search.json?q=' + encodeURIComponent(query) + '&limit=15';
-
-            fetch(url)
-            .then(function(response) {
-                if (!response.ok) {
-                    throw new Error('Ошибка ' + response.status);
-                }
-                return response.json();
-            })
-            .then(function(data) {
-                if (!data.docs || data.docs.length === 0) {
-                    error.classList.add('active');
-                    return;
-                }
-                displayBooks(data.docs);
-            })
-            .catch(function(err) {
-                console.error('Ошибка:', err);
-                tg.showAlert('❌ ' + err.message);
-                error.classList.add('active');
-            })
-            .finally(function() {
-                loader.classList.remove('active');
-                searchBtn.disabled = false;
-            });
-        }
-
-        // =============================================================
-        // 8. ОТОБРАЖЕНИЕ ФИЛЬМОВ
+        // 7. ОТОБРАЖЕНИЕ
         // =============================================================
         function displayMovies(movies) {
             results.classList.add('active');
@@ -1203,61 +1056,7 @@
         }
 
         // =============================================================
-        // 9. ОТОБРАЖЕНИЕ КНИГ
-        // =============================================================
-        function displayBooks(books) {
-            results.classList.add('active');
-            resultsCount.textContent = books.length + ' книг';
-            movieGrid.innerHTML = '';
-
-            for (var i = 0; i < books.length; i++) {
-                var book = books[i];
-                var card = document.createElement('div');
-                card.className = 'movie-card';
-                card.style.animationDelay = (0.03 + i * 0.03) + 's';
-
-                var title = book.title || 'без названия';
-                var author = book.author_name ? book.author_name.slice(0, 2).join(', ') : 'автор неизвестен';
-                var year = book.first_publish_year || '';
-                var coverId = book.cover_i || null;
-                var coverUrl = coverId ? 'https://covers.openlibrary.org/b/id/' + coverId + '-M.jpg' : null;
-                var link = 'https://openlibrary.org' + (book.key || '');
-
-                var posterHtml;
-                if (coverUrl) {
-                    posterHtml = '<img class="movie-poster" src="' + coverUrl + '" alt="' + title + '" loading="lazy" onerror="this.className=\'movie-poster empty\'; this.textContent=\'📚\'">';
-                } else {
-                    posterHtml = '<div class="movie-poster empty">📚</div>';
-                }
-
-                var yearHtml = year ? '<span class="year">' + year + '</span>' : '';
-
-                card.innerHTML =
-                    posterHtml +
-                    '<div class="movie-info">' +
-                        '<div>' +
-                            '<div class="movie-title">' + title + ' ' + yearHtml + '</div>' +
-                            '<div class="book-author">✍️ ' + author + '</div>' +
-                        '</div>' +
-                        '<a href="' + link + '" class="movie-link" target="_blank">→ открыть</a>' +
-                    '</div>';
-
-                card.addEventListener('click', function(e) {
-                    if (!e.target.closest('.movie-link')) {
-                        if (link) {
-                            tg.openLink(link);
-                        } else {
-                            tg.showAlert('Ссылка на книгу недоступна');
-                        }
-                    }
-                });
-
-                movieGrid.appendChild(card);
-            }
-        }
-
-        // =============================================================
-        // 10. ОБРАБОТЧИКИ
+        // 8. ОБРАБОТЧИКИ
         // =============================================================
         searchBtn.addEventListener('click', function() {
             search(searchInput.value);
@@ -1273,7 +1072,7 @@
             tg.close();
         }
 
-        console.log('✦ KINOPOISK RUS ✦');
+        console.log('✦ KINOPOISK RUS ✦ (Фильмы + Сериалы)');
         console.log('✦ Вкладка: ' + currentTab);
         console.log('✦ Только иконки без текста!');
     </script>
