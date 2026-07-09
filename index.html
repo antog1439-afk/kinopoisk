@@ -24,16 +24,28 @@
         }
 
         /* ============================================================
-           ЦВЕТНОЙ ФОН ВСЕГО ЭКРАНА
+           ЦВЕТНОЙ ФОН
            ============================================================ */
-        .gradient-bg {
+        #gradientBg {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
             z-index: -2;
-            transition: all 1.8s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: background 1.5s ease;
+        }
+
+        body.bg-movies #gradientBg {
+            background: radial-gradient(ellipse at center, #1a0a0a 0%, #2d0a0a 20%, #1a0505 40%, #0a0a0f 70%, #0a0a0f 100%);
+        }
+
+        body.bg-series #gradientBg {
+            background: radial-gradient(ellipse at center, #0a0a1a 0%, #0a0a2d 20%, #05051a 40%, #0a0a0f 70%, #0a0a0f 100%);
+        }
+
+        body.bg-books #gradientBg {
+            background: radial-gradient(ellipse at center, #0a1a0a 0%, #0a2d0a 20%, #051a05 40%, #0a0a0f 70%, #0a0a0f 100%);
         }
 
         .gradient-overlay {
@@ -45,7 +57,19 @@
             z-index: -1;
             backdrop-filter: blur(60px);
             -webkit-backdrop-filter: blur(60px);
-            transition: all 1.5s ease;
+            transition: background 1.5s ease;
+        }
+
+        body.bg-movies .gradient-overlay {
+            background: rgba(255, 107, 107, 0.06);
+        }
+
+        body.bg-series .gradient-overlay {
+            background: rgba(77, 150, 255, 0.06);
+        }
+
+        body.bg-books .gradient-overlay {
+            background: rgba(107, 203, 119, 0.06);
         }
 
         /* ============================================================
@@ -111,7 +135,7 @@
         }
 
         /* ============================================================
-           ВКЛАДКИ
+           ВКЛАДКИ - ТОЛЬКО ИКОНКИ БЕЗ ТЕКСТА
            ============================================================ */
         .tabs {
             display: flex;
@@ -123,17 +147,15 @@
 
         .tab-btn {
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 4px;
-            width: 68px;
-            height: 68px;
+            width: 60px;
+            height: 60px;
             padding: 0;
             background: rgba(255, 255, 255, 0.05);
             color: rgba(255, 255, 255, 0.3);
             border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 18px;
+            border-radius: 50%;
             cursor: pointer;
             transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
             backdrop-filter: blur(10px);
@@ -146,7 +168,7 @@
             content: '';
             position: absolute;
             inset: 0;
-            border-radius: 18px;
+            border-radius: 50%;
             opacity: 0;
             transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
@@ -212,25 +234,6 @@
             z-index: 1;
         }
 
-        .tab-btn .tab-label {
-            font-size: 8px;
-            font-weight: 400;
-            letter-spacing: 0.8px;
-            text-transform: uppercase;
-            opacity: 0.3;
-            transition: all 0.4s ease;
-            position: relative;
-            z-index: 1;
-        }
-
-        .tab-btn:hover .tab-label {
-            opacity: 0.6;
-        }
-
-        .tab-btn.active .tab-label {
-            opacity: 0.9;
-        }
-
         .tab-btn[data-tab="movies"] .tab-icon {
             stroke: rgba(255, 255, 255, 0.25);
         }
@@ -261,7 +264,7 @@
         .tab-btn.active::after {
             content: '';
             position: absolute;
-            bottom: 8px;
+            bottom: 6px;
             left: 50%;
             transform: translateX(-50%);
             width: 5px;
@@ -443,7 +446,7 @@
         }
 
         /* ============================================================
-           КАРТОЧКИ С ЦВЕТНЫМ ФОНОМ
+           КАРТОЧКИ
            ============================================================ */
         .movie-card {
             display: flex;
@@ -457,37 +460,6 @@
             animation: cardIn 0.45s ease backwards;
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
-        }
-
-        /* Цветные карточки в зависимости от вкладки */
-        .tab-movies .movie-card {
-            background: rgba(255, 107, 107, 0.05);
-            border-color: rgba(255, 107, 107, 0.06);
-        }
-
-        .tab-movies .movie-card:hover {
-            background: rgba(255, 107, 107, 0.08);
-            border-color: rgba(255, 107, 107, 0.1);
-        }
-
-        .tab-series .movie-card {
-            background: rgba(77, 150, 255, 0.05);
-            border-color: rgba(77, 150, 255, 0.06);
-        }
-
-        .tab-series .movie-card:hover {
-            background: rgba(77, 150, 255, 0.08);
-            border-color: rgba(77, 150, 255, 0.1);
-        }
-
-        .tab-books .movie-card {
-            background: rgba(107, 203, 119, 0.05);
-            border-color: rgba(107, 203, 119, 0.06);
-        }
-
-        .tab-books .movie-card:hover {
-            background: rgba(107, 203, 119, 0.08);
-            border-color: rgba(107, 203, 119, 0.1);
         }
 
         .movie-card:nth-child(1) { animation-delay: 0.03s; }
@@ -510,6 +482,37 @@
 
         .movie-card:active {
             transform: scale(0.98);
+        }
+
+        /* Цветные карточки */
+        .bg-movies .movie-card {
+            background: rgba(255, 107, 107, 0.05);
+            border-color: rgba(255, 107, 107, 0.06);
+        }
+
+        .bg-movies .movie-card:hover {
+            background: rgba(255, 107, 107, 0.08);
+            border-color: rgba(255, 107, 107, 0.1);
+        }
+
+        .bg-series .movie-card {
+            background: rgba(77, 150, 255, 0.05);
+            border-color: rgba(77, 150, 255, 0.06);
+        }
+
+        .bg-series .movie-card:hover {
+            background: rgba(77, 150, 255, 0.08);
+            border-color: rgba(77, 150, 255, 0.1);
+        }
+
+        .bg-books .movie-card {
+            background: rgba(107, 203, 119, 0.05);
+            border-color: rgba(107, 203, 119, 0.06);
+        }
+
+        .bg-books .movie-card:hover {
+            background: rgba(107, 203, 119, 0.08);
+            border-color: rgba(107, 203, 119, 0.1);
         }
 
         .movie-poster {
@@ -834,15 +837,12 @@
 
         @media (max-width: 400px) {
             .tab-btn {
-                width: 56px;
-                height: 56px;
+                width: 52px;
+                height: 52px;
             }
             .tab-icon {
-                width: 22px;
-                height: 22px;
-            }
-            .tab-btn .tab-label {
-                font-size: 7px;
+                width: 24px;
+                height: 24px;
             }
             .search-btn {
                 padding: 13px 16px;
@@ -854,11 +854,11 @@
 <body>
 
     <!-- ===== ФОН ===== -->
-    <div class="gradient-bg" id="gradientBg"></div>
+    <div id="gradientBg"></div>
     <div class="gradient-overlay"></div>
 
     <!-- ===== ОСНОВНОЙ КОНТЕЙНЕР ===== -->
-    <div class="container" id="mainContainer">
+    <div class="container">
 
         <!-- ===== ШАПКА ===== -->
         <div class="header">
@@ -869,7 +869,7 @@
             <div class="time-indicator" id="timeIndicator">⚡ сейчас</div>
         </div>
 
-        <!-- ===== ВКЛАДКИ ===== -->
+        <!-- ===== ВКЛАДКИ - ТОЛЬКО ИКОНКИ ===== -->
         <div class="tabs">
             <button class="tab-btn active" data-tab="movies" onclick="switchTab('movies')" title="Фильмы">
                 <svg class="tab-icon" viewBox="0 0 24 24">
@@ -879,7 +879,6 @@
                     <line x1="2" y1="10" x2="22" y2="10"/>
                     <polygon points="10,13 14,11 14,15 10,13"/>
                 </svg>
-                <span class="tab-label">Фильмы</span>
             </button>
 
             <button class="tab-btn" data-tab="series" onclick="switchTab('series')" title="Сериалы">
@@ -891,7 +890,6 @@
                     <line x1="18" y1="2" x2="18" y2="4"/>
                     <line x1="2" y1="8" x2="22" y2="8"/>
                 </svg>
-                <span class="tab-label">Сериалы</span>
             </button>
 
             <button class="tab-btn" data-tab="books" onclick="switchTab('books')" title="Книги">
@@ -903,7 +901,6 @@
                     <line x1="8" y1="10" x2="8" y2="16"/>
                     <line x1="16" y1="10" x2="16" y2="16"/>
                 </svg>
-                <span class="tab-label">Книги</span>
             </button>
         </div>
 
@@ -975,34 +972,9 @@
         console.log('🔑 API ключ установлен:', KINOPOISK_API_KEY ? '✅' : '❌');
 
         // =============================================================
-        // 3. ЦВЕТНЫЕ ГРАДИЕНТЫ ФОНА
-        // =============================================================
-        var tabColors = {
-            'movies': {
-                bg: 'linear-gradient(135deg, #1a0a0a 0%, #2d0a0a 25%, #1a0505 50%, #0a0a0f 75%, #0a0a0f 100%)',
-                overlay: 'rgba(255, 107, 107, 0.08)',
-                containerClass: 'tab-movies',
-                primary: '#ff6b6b'
-            },
-            'series': {
-                bg: 'linear-gradient(135deg, #0a0a1a 0%, #0a0a2d 25%, #05051a 50%, #0a0a0f 75%, #0a0a0f 100%)',
-                overlay: 'rgba(77, 150, 255, 0.08)',
-                containerClass: 'tab-series',
-                primary: '#4d96ff'
-            },
-            'books': {
-                bg: 'linear-gradient(135deg, #0a1a0a 0%, #0a2d0a 25%, #051a05 50%, #0a0a0f 75%, #0a0a0f 100%)',
-                overlay: 'rgba(107, 203, 119, 0.08)',
-                containerClass: 'tab-books',
-                primary: '#6bcb77'
-            }
-        };
-
-        // =============================================================
-        // 4. ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК
+        // 3. ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК
         // =============================================================
         var currentTab = 'movies';
-        var container = document.getElementById('mainContainer');
 
         function switchTab(tab) {
             currentTab = tab;
@@ -1013,14 +985,7 @@
             });
 
             // Меняем фон
-            var color = tabColors[tab];
-            if (color) {
-                document.getElementById('gradientBg').style.background = color.bg;
-                document.querySelector('.gradient-overlay').style.background = color.overlay;
-                
-                // Меняем класс контейнера для цветных карточек
-                container.className = 'container ' + color.containerClass;
-            }
+            document.body.className = 'bg-' + tab;
 
             // Меняем placeholder
             var placeholders = {
@@ -1041,7 +1006,7 @@
         }
 
         // =============================================================
-        // 5. ВРЕМЯ
+        // 4. ВРЕМЯ
         // =============================================================
         function updateTime() {
             var now = new Date();
@@ -1055,7 +1020,7 @@
         setInterval(updateTime, 10000);
 
         // =============================================================
-        // 6. ЭЛЕМЕНТЫ
+        // 5. ЭЛЕМЕНТЫ
         // =============================================================
         var searchInput = document.getElementById('searchInput');
         var searchBtn = document.getElementById('searchBtn');
@@ -1067,7 +1032,7 @@
         var welcome = document.getElementById('welcome');
 
         // =============================================================
-        // 7. ПОИСК
+        // 6. ПОИСК
         // =============================================================
         function search(query) {
             query = query.trim();
@@ -1134,7 +1099,7 @@
         }
 
         // =============================================================
-        // 8. ПОИСК КНИГ
+        // 7. ПОИСК КНИГ
         // =============================================================
         function searchBooks(query) {
             var url = 'https://openlibrary.org/search.json?q=' + encodeURIComponent(query) + '&limit=15';
@@ -1165,7 +1130,7 @@
         }
 
         // =============================================================
-        // 9. ОТОБРАЖЕНИЕ ФИЛЬМОВ
+        // 8. ОТОБРАЖЕНИЕ ФИЛЬМОВ
         // =============================================================
         function displayMovies(movies) {
             results.classList.add('active');
@@ -1238,7 +1203,7 @@
         }
 
         // =============================================================
-        // 10. ОТОБРАЖЕНИЕ КНИГ
+        // 9. ОТОБРАЖЕНИЕ КНИГ
         // =============================================================
         function displayBooks(books) {
             results.classList.add('active');
@@ -1292,7 +1257,7 @@
         }
 
         // =============================================================
-        // 11. ОБРАБОТЧИКИ
+        // 10. ОБРАБОТЧИКИ
         // =============================================================
         searchBtn.addEventListener('click', function() {
             search(searchInput.value);
@@ -1310,7 +1275,7 @@
 
         console.log('✦ KINOPOISK RUS ✦');
         console.log('✦ Вкладка: ' + currentTab);
-        console.log('✦ Цветной фон активен!');
+        console.log('✦ Только иконки без текста!');
     </script>
 </body>
 </html>
