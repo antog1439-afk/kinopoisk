@@ -765,12 +765,13 @@
         }
 
         // =============================================================
-        // 2. КОНФИГУРАЦИЯ API
+        // 2. КОНФИГУРАЦИЯ
         // =============================================================
-        // Для локальной разработки:
-        var API_BASE = 'http://127.0.0.1:5000';
-        // Для продакшена (через ngrok):
-        // var API_BASE = 'https://xxxx-xxx-xxx.ngrok.io';
+        // 🔑 ПОЛУЧИ КЛЮЧ НА https://api.kinopoisk.dev/
+        var KINOPOISK_API_KEY = 'ВАШ_КЛЮЧ_КИНОПОИСКА';  // ← ВСТАВЬ СВОЙ КЛЮЧ!
+
+        // Для отладки
+        console.log('🔑 API ключ:', KINOPOISK_API_KEY ? '✅ установлен' : '❌ не установлен');
 
         // =============================================================
         // 3. СМЕНА ЦВЕТА КАЖДЫЙ ЧАС
@@ -862,7 +863,7 @@
         }
 
         // =============================================================
-        // 7. ПОИСК
+        // 7. ПОИСК ФИЛЬМОВ И СЕРИАЛОВ
         // =============================================================
         function search(query) {
             query = query.trim();
@@ -879,26 +880,33 @@
             movieGrid.innerHTML = '';
             resultsCount.textContent = '';
 
-            var endpoint = '';
             if (currentTab === 'books') {
-                endpoint = '/search/books';
-            } else if (currentTab === 'series') {
-                endpoint = '/search/series';
-            } else {
-                endpoint = '/search';
+                searchBooks(query);
+                return;
             }
 
-            fetch(API_BASE + endpoint, {
-                method: 'POST',
+            var url = 'https://api.poiskkino.dev/v1.4/movie/search?query=' + encodeURIComponent(query);
+            if (currentTab === 'series') {
+                url += '&type=series';
+            }
+
+            fetch(url, {
+                method: 'GET',
                 headers: {
+                    'X-API-KEY': KINOPOISK_API_KEY,
                     'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    query: query
-                })
+                }
             })
             .then(function(response) {
-                if (!response.ok) throw new Error('ошибка ' + response.status);
+                if (response.status === 401) {
+                    throw new Error('❌ Неверный API ключ. Получите ключ на https://api.kinopoisk.dev/');
+                }
+                if (response.status === 429) {
+                    throw new Error('❌ Слишком много запросов. Подождите немного.');
+                }
+                if (!response.ok) {
+                    throw new Error('Ошибка ' + response.status);
+                }
                 return response.json();
             })
             .then(function(data) {
@@ -906,11 +914,7 @@
                     error.classList.add('active');
                     return;
                 }
-                if (currentTab === 'books') {
-                    displayBooks(data.docs);
-                } else {
-                    displayMovies(data.docs);
-                }
+                displayMovies(data.docs);
             })
             .catch(function(err) {
                 console.error('Ошибка:', err);
@@ -924,7 +928,38 @@
         }
 
         // =============================================================
-        // 8. ОТОБРАЖЕНИЕ ФИЛЬМОВ И СЕРИАЛОВ
+        // 8. ПОИСК КНИГ (OpenLibrary)
+        // =============================================================
+        function searchBooks(query) {
+            var url = 'https://openlibrary.org/search.json?q=' + encodeURIComponent(query) + '&limit=15';
+
+            fetch(url)
+            .then(function(response) {
+                if (!response.ok) {
+                    throw new Error('Ошибка ' + response.status);
+                }
+                return response.json();
+            })
+            .then(function(data) {
+                if (!data.docs || data.docs.length === 0) {
+                    error.classList.add('active');
+                    return;
+                }
+                displayBooks(data.docs);
+            })
+            .catch(function(err) {
+                console.error('Ошибка:', err);
+                tg.showAlert('❌ ' + err.message);
+                error.classList.add('active');
+            })
+            .finally(function() {
+                loader.classList.remove('active');
+                searchBtn.disabled = false;
+            });
+        }
+
+        // =============================================================
+        // 9. ОТОБРАЖЕНИЕ ФИЛЬМОВ И СЕРИАЛОВ
         // =============================================================
         function displayMovies(movies) {
             results.classList.add('active');
@@ -997,7 +1032,7 @@
         }
 
         // =============================================================
-        // 9. ОТОБРАЖЕНИЕ КНИГ
+        // 10. ОТОБРАЖЕНИЕ КНИГ
         // =============================================================
         function displayBooks(books) {
             results.classList.add('active');
@@ -1011,32 +1046,20 @@
                 card.style.animationDelay = (0.03 + i * 0.03) + 's';
 
                 var title = book.title || 'без названия';
-                var author = book.author || book.authors?.join(', ') || 'автор неизвестен';
-                var year = book.year || '';
-                var publisher = book.publisher || '';
-                var description = book.description || '';
-                var cover = book.cover || null;
-                var rating = book.rating || null;
-                var link = book.link || '#';
-                var categories = book.categories || [];
-                var categoryText = categories.slice(0, 2).join(', ') || '';
-
-                var ratingHtml = '';
-                if (rating) {
-                    var ratingClass = rating >= 4 ? 'high' : '';
-                    ratingHtml = '<span class="book-rating ' + ratingClass + '">★ ' + rating.toFixed(1) + '</span>';
-                }
+                var author = book.author_name ? book.author_name.slice(0, 2).join(', ') : 'автор неизвестен';
+                var year = book.first_publish_year || '';
+                var coverId = book.cover_i || null;
+                var coverUrl = coverId ? 'https://covers.openlibrary.org/b/id/' + coverId + '-M.jpg' : null;
+                var link = 'https://openlibrary.org' + (book.key || '');
 
                 var posterHtml;
-                if (cover) {
-                    posterHtml = '<img class="movie-poster" src="' + cover + '" alt="' + title + '" loading="lazy" onerror="this.className=\'movie-poster empty\'; this.textContent=\'📚\'">';
+                if (coverUrl) {
+                    posterHtml = '<img class="movie-poster" src="' + coverUrl + '" alt="' + title + '" loading="lazy" onerror="this.className=\'movie-poster empty\'; this.textContent=\'📚\'">';
                 } else {
                     posterHtml = '<div class="movie-poster empty">📚</div>';
                 }
 
                 var yearHtml = year ? '<span class="year">' + year + '</span>' : '';
-                var descHtml = description ? '<div class="book-description">' + description + '</div>' : '';
-                var publisherHtml = publisher ? '<div class="book-publisher">' + publisher + '</div>' : '';
 
                 card.innerHTML =
                     posterHtml +
@@ -1044,17 +1067,13 @@
                         '<div>' +
                             '<div class="movie-title">' + title + ' ' + yearHtml + '</div>' +
                             '<div class="book-author">✍️ ' + author + '</div>' +
-                            (categoryText ? '<div class="movie-meta"><span class="movie-meta-item">' + categoryText + '</span></div>' : '') +
-                            ratingHtml +
-                            publisherHtml +
-                            descHtml +
                         '</div>' +
                         '<a href="' + link + '" class="movie-link" target="_blank">→ открыть</a>' +
                     '</div>';
 
                 card.addEventListener('click', function(e) {
                     if (!e.target.closest('.movie-link')) {
-                        if (link && link !== '#') {
+                        if (link) {
                             tg.openLink(link);
                         } else {
                             tg.showAlert('Ссылка на книгу недоступна');
@@ -1067,7 +1086,7 @@
         }
 
         // =============================================================
-        // 10. ОБРАБОТЧИКИ
+        // 11. ОБРАБОТЧИКИ
         // =============================================================
         searchBtn.addEventListener('click', function() {
             search(searchInput.value);
@@ -1083,9 +1102,10 @@
             tg.close();
         }
 
-        console.log('✦ KINOPOISK RUS ✦ (фильмы · сериалы · книги)');
-        console.log('✦ цвет обновлён: ' + new Date().toLocaleTimeString('ru-RU'));
-        console.log('✦ API: ' + API_BASE);
+        console.log('✦ KINOPOISK RUS ✦');
+        console.log('✦ Цвет обновлён: ' + new Date().toLocaleTimeString('ru-RU'));
+        console.log('✦ API ключ: ' + (KINOPOISK_API_KEY ? '✅ установлен' : '❌ не установлен'));
+        console.log('✦ Вкладка: ' + currentTab);
     </script>
 </body>
 </html>
