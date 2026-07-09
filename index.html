@@ -3,10 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🎬 Поиск фильмов</title>
+    <title>KINOPOISK RUS</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        /* ===== БАЗОВЫЕ СТИЛИ ===== */
+        /* ============================================================
+           БАЗА
+           ============================================================ */
         * {
             margin: 0;
             padding: 0;
@@ -14,84 +16,100 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: var(--tg-theme-bg-color, #0a0a0f);
-            color: var(--tg-theme-text-color, #ffffff);
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0f;
+            color: #ffffff;
             min-height: 100vh;
-            padding: 0 0 20px 0;
             overflow-x: hidden;
+            transition: background 1s ease;
         }
 
-        /* ===== ФОН С ГРАДИЕНТОМ ===== */
-        .background-gradient {
+        /* ============================================================
+           ДИНАМИЧЕСКИЙ ГРАДИЕНТ (меняется каждый час)
+           ============================================================ */
+        .gradient-bg {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(135deg, #0a0a1a 0%, #1a0a2e 50%, #0a1a2e 100%);
-            z-index: -1;
-            opacity: 0.8;
+            z-index: -2;
+            transition: background 2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* ===== ШАПКА ===== */
+        .gradient-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: -1;
+            background: rgba(10, 10, 15, 0.7);
+            backdrop-filter: blur(80px);
+        }
+
+        /* ============================================================
+           ШАПКА
+           ============================================================ */
         .header {
             text-align: center;
-            padding: 30px 20px 24px;
-            background: linear-gradient(135deg, rgba(51, 144, 236, 0.15), rgba(100, 50, 200, 0.15));
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            margin-bottom: 20px;
+            padding: 28px 20px 16px;
             position: relative;
-            overflow: hidden;
         }
 
-        .header::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(51, 144, 236, 0.05) 0%, transparent 70%);
-            animation: headerGlow 8s ease-in-out infinite alternate;
-        }
-
-        @keyframes headerGlow {
-            0% { transform: translateX(-20%) translateY(-20%); }
-            100% { transform: translateX(20%) translateY(20%); }
-        }
-
-        .header h1 {
-            font-size: 28px;
+        .header .logo {
+            font-size: 32px;
             font-weight: 800;
-            background: linear-gradient(135deg, #3390ec, #8b5cf6);
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #ffffff 30%, rgba(255, 255, 255, 0.5));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            position: relative;
-            letter-spacing: -0.5px;
+            text-shadow: 0 0 60px rgba(255, 255, 255, 0.05);
         }
 
-        .header h1 .emoji {
-            -webkit-text-fill-color: initial;
+        .header .logo .highlight {
+            background: linear-gradient(135deg, #ff6b6b, #ffd93d, #6bcb77, #4d96ff, #9b59b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            background-size: 300% 300%;
+            animation: gradientShift 6s ease-in-out infinite;
         }
 
-        .header p {
-            font-size: 14px;
-            color: var(--tg-theme-hint-color, rgba(255, 255, 255, 0.5));
-            margin-top: 6px;
-            position: relative;
-            letter-spacing: 0.3px;
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
         }
 
-        /* ===== ПОИСКОВАЯ СТРОКА ===== */
+        .header .subtitle {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.25);
+            letter-spacing: 2px;
+            font-weight: 300;
+            text-transform: uppercase;
+            margin-top: 4px;
+        }
+
+        .header .time-indicator {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.15);
+            letter-spacing: 1px;
+            margin-top: 8px;
+            font-weight: 300;
+        }
+
+        /* ============================================================
+           ПОИСК
+           ============================================================ */
         .search-container {
             display: flex;
-            gap: 12px;
+            gap: 10px;
             padding: 0 16px;
-            margin-bottom: 20px;
-            position: relative;
+            margin: 12px 0 20px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .search-input-wrapper {
@@ -104,69 +122,63 @@
             left: 14px;
             top: 50%;
             transform: translateY(-50%);
-            font-size: 18px;
-            opacity: 0.6;
+            font-size: 16px;
+            opacity: 0.3;
             pointer-events: none;
+            transition: opacity 0.3s ease;
         }
 
         .search-input {
             width: 100%;
-            padding: 14px 16px 14px 46px;
-            border: 2px solid rgba(255, 255, 255, 0.08);
-            border-radius: 16px;
-            font-size: 16px;
-            background: var(--tg-theme-secondary-bg-color, rgba(255, 255, 255, 0.06));
-            color: var(--tg-theme-text-color, #ffffff);
+            padding: 14px 16px 14px 44px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 14px;
+            font-size: 15px;
+            background: rgba(255, 255, 255, 0.04);
+            color: #ffffff;
             outline: none;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             backdrop-filter: blur(10px);
+            font-weight: 400;
+            letter-spacing: 0.2px;
         }
 
         .search-input::placeholder {
-            color: var(--tg-theme-hint-color, rgba(255, 255, 255, 0.3));
+            color: rgba(255, 255, 255, 0.2);
+            font-weight: 300;
         }
 
         .search-input:focus {
-            border-color: #3390ec;
-            background: var(--tg-theme-bg-color, rgba(255, 255, 255, 0.08));
-            box-shadow: 0 0 0 4px rgba(51, 144, 236, 0.15);
-            transform: scale(1.01);
+            border-color: rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.06);
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.03);
         }
 
+        .search-input:focus + .icon,
+        .search-input:focus ~ .icon {
+            opacity: 0.6;
+        }
+
+        /* ===== ТОНКАЯ КНОПКА ПОИСКА ===== */
         .search-button {
-            padding: 14px 28px;
-            background: linear-gradient(135deg, #3390ec, #6c5ce7);
-            color: #ffffff;
-            border: none;
-            border-radius: 16px;
-            font-size: 16px;
-            font-weight: 700;
+            padding: 14px 20px;
+            background: rgba(255, 255, 255, 0.04);
+            color: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 14px;
+            font-size: 14px;
+            font-weight: 400;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             white-space: nowrap;
-            box-shadow: 0 4px 20px rgba(51, 144, 236, 0.3);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .search-button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s;
-        }
-
-        .search-button:hover:not(:disabled)::before {
-            left: 100%;
+            letter-spacing: 0.5px;
+            backdrop-filter: blur(10px);
         }
 
         .search-button:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 30px rgba(51, 144, 236, 0.4);
+            background: rgba(255, 255, 255, 0.08);
+            color: #ffffff;
+            border-color: rgba(255, 255, 255, 0.1);
         }
 
         .search-button:active:not(:disabled) {
@@ -174,12 +186,13 @@
         }
 
         .search-button:disabled {
-            opacity: 0.5;
+            opacity: 0.3;
             cursor: not-allowed;
-            transform: none;
         }
 
-        /* ===== ЗАГРУЗКА ===== */
+        /* ============================================================
+           ЗАГРУЗКА
+           ============================================================ */
         .loading-spinner {
             display: none;
             text-align: center;
@@ -188,17 +201,17 @@
 
         .loading-spinner.active {
             display: block;
-            animation: fadeIn 0.3s ease;
+            animation: fadeUp 0.4s ease;
         }
 
-        .spinner {
-            width: 56px;
-            height: 56px;
-            border: 3px solid rgba(255, 255, 255, 0.05);
-            border-top: 3px solid #3390ec;
+        .spinner-ring {
+            width: 32px;
+            height: 32px;
+            border: 2px solid rgba(255, 255, 255, 0.04);
+            border-top: 2px solid rgba(255, 255, 255, 0.3);
             border-radius: 50%;
             animation: spin 0.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-            margin: 0 auto 16px;
+            margin: 0 auto 12px;
         }
 
         @keyframes spin {
@@ -207,102 +220,108 @@
         }
 
         .loading-spinner p {
-            color: var(--tg-theme-hint-color, rgba(255, 255, 255, 0.4));
-            font-size: 14px;
-            letter-spacing: 0.5px;
+            color: rgba(255, 255, 255, 0.15);
+            font-size: 13px;
+            font-weight: 300;
+            letter-spacing: 1px;
         }
 
-        /* ===== РЕЗУЛЬТАТЫ ===== */
+        /* ============================================================
+           РЕЗУЛЬТАТЫ
+           ============================================================ */
         .results {
             display: none;
             padding: 0 16px;
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
         .results.active {
             display: block;
-            animation: fadeIn 0.4s ease;
+            animation: fadeUp 0.5s ease;
         }
 
-        @keyframes fadeIn {
+        @keyframes fadeUp {
             from { opacity: 0; transform: translateY(12px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
         .results-count {
-            font-size: 13px;
-            color: var(--tg-theme-hint-color, rgba(255, 255, 255, 0.35));
-            margin-bottom: 16px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.15);
+            margin-bottom: 14px;
             padding: 0 4px;
-            letter-spacing: 0.3px;
-            font-weight: 500;
+            letter-spacing: 1px;
+            font-weight: 300;
             text-transform: uppercase;
         }
 
         .movie-grid {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 16px;
+            gap: 12px;
         }
 
-        /* ===== КАРТОЧКИ ФИЛЬМОВ ===== */
+        /* ============================================================
+           КАРТОЧКИ ФИЛЬМОВ (минималистичные)
+           ============================================================ */
         .movie-card {
             display: flex;
-            gap: 16px;
-            background: var(--tg-theme-secondary-bg-color, rgba(255, 255, 255, 0.05));
-            border-radius: 20px;
-            padding: 16px;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            gap: 14px;
+            padding: 14px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
             cursor: pointer;
-            border: 1px solid rgba(255, 255, 255, 0.04);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: cardSlide 0.5s ease backwards;
             backdrop-filter: blur(10px);
-            animation: cardIn 0.5s ease backwards;
         }
 
-        .movie-card:nth-child(1) { animation-delay: 0.05s; }
-        .movie-card:nth-child(2) { animation-delay: 0.10s; }
-        .movie-card:nth-child(3) { animation-delay: 0.15s; }
-        .movie-card:nth-child(4) { animation-delay: 0.20s; }
-        .movie-card:nth-child(5) { animation-delay: 0.25s; }
-        .movie-card:nth-child(6) { animation-delay: 0.30s; }
+        .movie-card:nth-child(1) { animation-delay: 0.04s; }
+        .movie-card:nth-child(2) { animation-delay: 0.08s; }
+        .movie-card:nth-child(3) { animation-delay: 0.12s; }
+        .movie-card:nth-child(4) { animation-delay: 0.16s; }
+        .movie-card:nth-child(5) { animation-delay: 0.20s; }
+        .movie-card:nth-child(6) { animation-delay: 0.24s; }
 
-        @keyframes cardIn {
-            from { opacity: 0; transform: translateY(20px) scale(0.96); }
+        @keyframes cardSlide {
+            from { opacity: 0; transform: translateY(16px) scale(0.97); }
             to { opacity: 1; transform: translateY(0) scale(1); }
         }
 
         .movie-card:hover {
-            transform: translateY(-4px);
-            background: var(--tg-theme-secondary-bg-color, rgba(255, 255, 255, 0.08));
-            border-color: rgba(51, 144, 236, 0.2);
-            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.06);
+            transform: translateY(-2px);
         }
 
         .movie-card:active {
-            transform: scale(0.97);
+            transform: scale(0.98);
         }
 
         .movie-poster {
-            width: 85px;
-            height: 127px;
-            border-radius: 12px;
+            width: 70px;
+            height: 105px;
+            border-radius: 10px;
             object-fit: cover;
             flex-shrink: 0;
-            background: rgba(255, 255, 255, 0.03);
+            background: rgba(255, 255, 255, 0.02);
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-            transition: transform 0.3s ease;
+            transition: transform 0.4s ease;
         }
 
         .movie-card:hover .movie-poster {
-            transform: scale(1.03);
+            transform: scale(1.02);
         }
 
         .movie-poster.placeholder {
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 36px;
-            background: linear-gradient(135deg, rgba(51, 144, 236, 0.1), rgba(108, 92, 231, 0.1));
-            color: var(--tg-theme-hint-color, rgba(255, 255, 255, 0.3));
+            font-size: 28px;
+            background: rgba(255, 255, 255, 0.02);
+            color: rgba(255, 255, 255, 0.08);
         }
 
         .movie-info {
@@ -314,111 +333,110 @@
         }
 
         .movie-title {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--tg-theme-text-color, #ffffff);
-            margin-bottom: 2px;
-            line-height: 1.3;
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
             letter-spacing: -0.2px;
+            line-height: 1.3;
         }
 
         .movie-title .year {
-            font-weight: 400;
-            color: var(--tg-theme-hint-color, rgba(255, 255, 255, 0.3));
-            font-size: 15px;
+            font-weight: 300;
+            color: rgba(255, 255, 255, 0.15);
+            font-size: 14px;
             margin-left: 6px;
         }
 
         .movie-meta {
             display: flex;
             flex-wrap: wrap;
-            gap: 6px 12px;
-            margin: 6px 0 8px;
-            font-size: 12px;
-            color: var(--tg-theme-hint-color, rgba(255, 255, 255, 0.4));
+            gap: 4px 10px;
+            margin: 4px 0 6px;
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.2);
+            letter-spacing: 0.2px;
         }
 
         .movie-meta-item {
             display: flex;
             align-items: center;
-            gap: 4px;
-        }
-
-        .movie-meta-item .emoji {
-            font-size: 13px;
+            gap: 3px;
         }
 
         .movie-rating {
             display: inline-flex;
             align-items: center;
             gap: 4px;
-            padding: 3px 12px;
+            padding: 2px 10px;
             border-radius: 20px;
-            font-size: 14px;
-            font-weight: 700;
-            background: rgba(255, 255, 255, 0.06);
-            color: #ffffff;
-            margin: 4px 0 8px;
+            font-size: 12px;
+            font-weight: 500;
+            background: rgba(255, 255, 255, 0.03);
+            color: rgba(255, 255, 255, 0.5);
             width: fit-content;
+            margin: 2px 0 6px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
         }
 
         .movie-rating.high {
-            background: linear-gradient(135deg, rgba(76, 175, 80, 0.3), rgba(76, 175, 80, 0.1));
-            border: 1px solid rgba(76, 175, 80, 0.2);
-            color: #4CAF50;
+            color: #6bcb77;
+            border-color: rgba(107, 203, 119, 0.1);
+            background: rgba(107, 203, 119, 0.04);
         }
 
         .movie-rating.medium {
-            background: linear-gradient(135deg, rgba(255, 152, 0, 0.3), rgba(255, 152, 0, 0.1));
-            border: 1px solid rgba(255, 152, 0, 0.2);
-            color: #FF9800;
+            color: #ffd93d;
+            border-color: rgba(255, 217, 61, 0.1);
+            background: rgba(255, 217, 61, 0.04);
         }
 
         .movie-rating.low {
-            background: linear-gradient(135deg, rgba(244, 67, 54, 0.3), rgba(244, 67, 54, 0.1));
-            border: 1px solid rgba(244, 67, 54, 0.2);
-            color: #F44336;
+            color: #ff6b6b;
+            border-color: rgba(255, 107, 107, 0.1);
+            background: rgba(255, 107, 107, 0.04);
         }
 
         .movie-description {
-            font-size: 13px;
-            color: var(--tg-theme-hint-color, rgba(255, 255, 255, 0.35));
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.15);
             display: -webkit-box;
-            -webkit-line-clamp: 2;
+            -webkit-line-clamp: 1;
             -webkit-box-orient: vertical;
             overflow: hidden;
             line-height: 1.5;
+            font-weight: 300;
         }
 
+        /* ===== ТОНКАЯ ССЫЛКА ===== */
         .movie-link {
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            margin-top: 10px;
-            padding: 8px 16px;
-            background: linear-gradient(135deg, rgba(51, 144, 236, 0.15), rgba(108, 92, 231, 0.15));
-            color: #3390ec;
-            border: 1px solid rgba(51, 144, 236, 0.15);
-            border-radius: 12px;
+            gap: 4px;
+            margin-top: 6px;
+            padding: 4px 0;
+            color: rgba(255, 255, 255, 0.15);
             text-decoration: none;
-            font-size: 13px;
-            font-weight: 600;
+            font-size: 11px;
+            font-weight: 300;
+            letter-spacing: 0.5px;
             transition: all 0.3s ease;
+            border-bottom: 1px solid transparent;
             align-self: flex-start;
         }
 
         .movie-link:hover {
-            background: linear-gradient(135deg, rgba(51, 144, 236, 0.25), rgba(108, 92, 231, 0.25));
-            transform: translateX(4px);
-            border-color: rgba(51, 144, 236, 0.3);
+            color: rgba(255, 255, 255, 0.4);
+            border-bottom-color: rgba(255, 255, 255, 0.05);
         }
 
-        /* ===== ОШИБКА ===== */
+        /* ============================================================
+           ОШИБКА
+           ============================================================ */
         .error-message {
             text-align: center;
-            padding: 60px 20px;
+            padding: 50px 20px;
             display: none;
-            animation: fadeIn 0.4s ease;
+            animation: fadeUp 0.4s ease;
         }
 
         .error-message.active {
@@ -426,72 +444,80 @@
         }
 
         .error-message .icon {
-            font-size: 64px;
-            margin-bottom: 16px;
+            font-size: 48px;
+            margin-bottom: 12px;
             display: block;
+            opacity: 0.3;
         }
 
         .error-message h3 {
-            font-size: 20px;
-            color: var(--tg-theme-text-color, #ffffff);
-            margin-bottom: 8px;
-            font-weight: 600;
+            font-size: 17px;
+            color: rgba(255, 255, 255, 0.4);
+            font-weight: 400;
+            margin-bottom: 6px;
         }
 
         .error-message p {
-            font-size: 14px;
-            color: var(--tg-theme-hint-color, rgba(255, 255, 255, 0.4));
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.12);
+            font-weight: 300;
         }
 
-        /* ===== ПРИВЕТСТВИЕ ===== */
+        /* ============================================================
+           ПРИВЕТСТВИЕ
+           ============================================================ */
         .welcome-message {
             text-align: center;
             padding: 60px 20px;
-            color: var(--tg-theme-hint-color, rgba(255, 255, 255, 0.3));
-            animation: fadeIn 0.6s ease;
+            animation: fadeUp 0.6s ease;
         }
 
         .welcome-message .icon {
-            font-size: 72px;
-            margin-bottom: 16px;
+            font-size: 56px;
+            margin-bottom: 12px;
             display: block;
-            animation: float 3s ease-in-out infinite;
+            opacity: 0.15;
+            animation: float 4s ease-in-out infinite;
         }
 
         @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
         }
 
         .welcome-message h2 {
-            font-size: 22px;
-            color: var(--tg-theme-text-color, #ffffff);
-            margin-bottom: 8px;
-            font-weight: 700;
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.15);
+            font-weight: 300;
+            letter-spacing: 1px;
         }
 
         .welcome-message p {
-            font-size: 15px;
-            max-width: 300px;
-            margin: 0 auto;
-            line-height: 1.6;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.06);
+            font-weight: 300;
+            max-width: 280px;
+            margin: 4px auto 0;
         }
 
-        /* ===== КНОПКА ЗАКРЫТИЯ ===== */
+        /* ============================================================
+           КНОПКА ЗАКРЫТИЯ
+           ============================================================ */
         .close-button {
             display: none;
             width: calc(100% - 32px);
-            margin: 20px auto 0;
-            padding: 16px;
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--tg-theme-text-color, #ffffff);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 16px;
-            font-size: 16px;
-            font-weight: 600;
+            max-width: 600px;
+            margin: 16px auto 0;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            color: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.02);
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 300;
             cursor: pointer;
             transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
+            letter-spacing: 1px;
         }
 
         .close-button.active {
@@ -499,84 +525,68 @@
         }
 
         .close-button:hover {
-            background: rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.03);
+            color: rgba(255, 255, 255, 0.2);
         }
 
-        /* ===== АДАПТИВ ===== */
+        /* ============================================================
+           АДАПТИВ
+           ============================================================ */
         @media (min-width: 600px) {
-            .movie-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            .search-container {
-                padding: 0 24px;
-            }
-            .results {
-                padding: 0 24px;
-            }
+            .movie-grid { grid-template-columns: repeat(2, 1fr); }
+            .search-container { padding: 0 24px; }
+            .results { padding: 0 24px; }
+            .header .logo { font-size: 38px; }
         }
 
         @media (min-width: 900px) {
-            .movie-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            .search-container {
-                padding: 0 32px;
-            }
-            .results {
-                padding: 0 32px;
-            }
-            .header {
-                padding: 40px 20px 32px;
-            }
-            .header h1 {
-                font-size: 34px;
-            }
+            .movie-grid { grid-template-columns: repeat(2, 1fr); }
+            .search-container { padding: 0 32px; }
+            .results { padding: 0 32px; }
+            .header .logo { font-size: 44px; }
+            .header { padding: 40px 20px 20px; }
         }
 
         @media (min-width: 1200px) {
-            .movie-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-            .search-container {
-                max-width: 800px;
-                margin: 0 auto 20px;
-            }
-            .results {
-                max-width: 1200px;
-                margin: 0 auto;
-            }
+            .movie-grid { grid-template-columns: repeat(3, 1fr); }
+            .search-container { max-width: 700px; }
         }
     </style>
 </head>
 <body>
 
-    <div class="background-gradient"></div>
+    <!-- ===== ФОН ===== -->
+    <div class="gradient-bg" id="gradientBg"></div>
+    <div class="gradient-overlay"></div>
 
     <!-- ===== ШАПКА ===== -->
     <div class="header">
-        <h1><span class="emoji">🎬</span> Поиск фильмов</h1>
-        <p>Найди любой фильм на Кинопоиске</p>
+        <div class="logo">
+            KINO<span class="highlight">POISK</span> RUS
+        </div>
+        <div class="subtitle">••• кинопоиск в телеграме •••</div>
+        <div class="time-indicator" id="timeIndicator">⚡ обновлено сейчас</div>
     </div>
 
     <!-- ===== ПОИСК ===== -->
     <div class="search-container">
         <div class="search-input-wrapper">
-            <span class="icon">🔍</span>
+            <span class="icon">⌕</span>
             <input 
                 type="text" 
                 class="search-input" 
                 id="searchInput" 
-                placeholder="Введите название фильма..."
+                placeholder="название фильма..."
                 autofocus
             >
         </div>
-        <button class="search-button" id="searchButton">Найти</button>
+        <button class="search-button" id="searchButton">найти</button>
     </div>
 
     <!-- ===== ЗАГРУЗКА ===== -->
     <div class="loading-spinner" id="loadingSpinner">
-        <div class="spinner"></div>
-        <p>Ищем фильмы...</p>
+        <div class="spinner-ring"></div>
+        <p>поиск...</p>
     </div>
 
     <!-- ===== РЕЗУЛЬТАТЫ ===== -->
@@ -587,27 +597,27 @@
 
     <!-- ===== ОШИБКА ===== -->
     <div class="error-message" id="errorMessage">
-        <span class="icon">😔</span>
-        <h3>Фильм не найден</h3>
-        <p>Попробуйте изменить название или поискать на английском</p>
+        <span class="icon">◌</span>
+        <h3>ничего не найдено</h3>
+        <p>попробуйте другое название</p>
     </div>
 
     <!-- ===== ПРИВЕТСТВИЕ ===== -->
     <div class="welcome-message" id="welcomeMessage">
-        <span class="icon">🎬</span>
-        <h2>Добро пожаловать!</h2>
-        <p>Введите название фильма в поле выше и нажмите «Найти»</p>
+        <span class="icon">◈</span>
+        <h2>введите название фильма</h2>
+        <p>и нажмите «найти»</p>
     </div>
 
     <!-- ===== КНОПКА ЗАКРЫТИЯ ===== -->
-    <button class="close-button" id="closeButton" onclick="closeApp()">✕ Закрыть</button>
+    <button class="close-button" id="closeButton" onclick="closeApp()">✕ закрыть</button>
 
     <!-- ============================================================= -->
     <!-- ===== JAVASCRIPT ===== -->
     <!-- ============================================================= -->
     <script>
         // =============================================================
-        // 1. ИНИЦИАЛИЗАЦИЯ TELEGRAM WEB APP
+        // 1. TELEGRAM WEB APP
         // =============================================================
         const tg = window.Telegram.WebApp;
         tg.expand();
@@ -616,17 +626,66 @@
             document.getElementById('closeButton').classList.add('active');
         }
 
-        tg.setHeaderColor(tg.themeParams.bg_color || '#0a0a0f');
-        tg.setBackgroundColor(tg.themeParams.bg_color || '#0a0a0f');
+        // =============================================================
+        // 2. СМЕНА ЦВЕТА КАЖДЫЙ ЧАС
+        // =============================================================
+        const gradients = [
+            'linear-gradient(135deg, #0a0a1a 0%, #1a0a2e 50%, #0a1a2e 100%)',   // 00:00 — фиолетовый
+            'linear-gradient(135deg, #0a0a1a 0%, #1a0a0a 50%, #2e1a0a 100%)',   // 01:00 — тёплый
+            'linear-gradient(135deg, #0a0a1a 0%, #0a1a1a 50%, #0a2e1a 100%)',   // 02:00 — зелёный
+            'linear-gradient(135deg, #0a0a1a 0%, #0a1a2e 50%, #0a2e3a 100%)',   // 03:00 — синий
+            'linear-gradient(135deg, #0a0a1a 0%, #1a0a2e 50%, #2e0a3a 100%)',   // 04:00 — пурпурный
+            'linear-gradient(135deg, #0a0a1a 0%, #2e1a0a 50%, #3a2e0a 100%)',   // 05:00 — золотой
+            'linear-gradient(135deg, #0a0a1a 0%, #1a1a0a 50%, #2e2e0a 100%)',   // 06:00 — оливковый
+            'linear-gradient(135deg, #0a0a1a 0%, #0a1a0a 50%, #0a2e0a 100%)',   // 07:00 — изумрудный
+            'linear-gradient(135deg, #0a0a1a 0%, #0a0a2e 50%, #1a0a3a 100%)',   // 08:00 — индиго
+            'linear-gradient(135deg, #0a0a1a 0%, #2e0a1a 50%, #3a0a2e 100%)',   // 09:00 — розовый
+            'linear-gradient(135deg, #0a0a1a 0%, #0a2e1a 50%, #0a3a2e 100%)',   // 10:00 — мятный
+            'linear-gradient(135deg, #0a0a1a 0%, #1a2e0a 50%, #2e3a0a 100%)',   // 11:00 — лайм
+            'linear-gradient(135deg, #0a0a1a 0%, #2e0a0a 50%, #3a1a0a 100%)',   // 12:00 — красный
+            'linear-gradient(135deg, #0a0a1a 0%, #0a0a2e 50%, #0a1a3a 100%)',   // 13:00 — глубокий синий
+            'linear-gradient(135deg, #0a0a1a 0%, #1a0a1a 50%, #2e0a2e 100%)',   // 14:00 — маджента
+            'linear-gradient(135deg, #0a0a1a 0%, #0a1a2e 50%, #0a2e3a 100%)',   // 15:00 — циан
+            'linear-gradient(135deg, #0a0a1a 0%, #2e1a0a 50%, #3a2e1a 100%)',   // 16:00 — янтарный
+            'linear-gradient(135deg, #0a0a1a 0%, #0a1a1a 50%, #0a2e2e 100%)',   // 17:00 — бирюзовый
+            'linear-gradient(135deg, #0a0a1a 0%, #1a0a2e 50%, #2e0a3a 100%)',   // 18:00 — фиолетовый
+            'linear-gradient(135deg, #0a0a1a 0%, #2e0a1a 50%, #3a0a2e 100%)',   // 19:00 — пурпурный
+            'linear-gradient(135deg, #0a0a1a 0%, #1a1a0a 50%, #2e2e0a 100%)',   // 20:00 — золотой
+            'linear-gradient(135deg, #0a0a1a 0%, #0a2e1a 50%, #0a3a2e 100%)',   // 21:00 — изумрудный
+            'linear-gradient(135deg, #0a0a1a 0%, #0a0a2e 50%, #1a0a3a 100%)',   // 22:00 — индиго
+            'linear-gradient(135deg, #0a0a1a 0%, #2e0a0a 50%, #3a1a0a 100%)'    // 23:00 — красный
+        ];
+
+        function updateGradient() {
+            const now = new Date();
+            const hour = now.getHours();
+            const gradient = gradients[hour] || gradients[0];
+            document.getElementById('gradientBg').style.background = gradient;
+
+            // Обновляем индикатор времени
+            const timeStr = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('timeIndicator').textContent = `⚡ ${timeStr}`;
+        }
+
+        // Запускаем смену цвета
+        updateGradient();
+
+        // Обновляем каждый час (3600000 мс)
+        setInterval(updateGradient, 3600000);
+
+        // Также обновляем при смене вкладки (для точности)
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) updateGradient();
+        });
 
         // =============================================================
-        // 2. НАСТРОЙКА API
+        // 3. API НАСТРОЙКИ
         // =============================================================
         const API_KEY = '92TKXCB-6GNMBMP-J6SSQDN-3R4VVHG';
         const API_URL = 'https://api.poiskkino.dev/v1.4/movie/search';
 
         // =============================================================
-        // 3. ЭЛЕМЕНТЫ
+        // 4. ЭЛЕМЕНТЫ
         // =============================================================
         const searchInput = document.getElementById('searchInput');
         const searchButton = document.getElementById('searchButton');
@@ -638,11 +697,11 @@
         const welcomeMessage = document.getElementById('welcomeMessage');
 
         // =============================================================
-        // 4. ПОИСК
+        // 5. ПОИСК
         // =============================================================
         async function searchMovies(query) {
             if (!query.trim()) {
-                tg.showAlert('Пожалуйста, введите название фильма');
+                tg.showAlert('введите название фильма');
                 return;
             }
 
@@ -664,17 +723,9 @@
                     }
                 });
 
-                if (response.status === 401) {
-                    throw new Error('Неверный API-ключ');
-                }
-
-                if (response.status === 429) {
-                    throw new Error('Слишком много запросов. Подождите.');
-                }
-
-                if (!response.ok) {
-                    throw new Error(`Ошибка ${response.status}`);
-                }
+                if (response.status === 401) throw new Error('неверный ключ API');
+                if (response.status === 429) throw new Error('слишком много запросов');
+                if (!response.ok) throw new Error(`ошибка ${response.status}`);
 
                 const data = await response.json();
 
@@ -696,25 +747,25 @@
         }
 
         // =============================================================
-        // 5. ОТОБРАЖЕНИЕ
+        // 6. ОТОБРАЖЕНИЕ
         // =============================================================
         function displayMovies(movies) {
             results.classList.add('active');
-            resultsCount.textContent = `Найдено ${movies.length} фильмов`;
+            resultsCount.textContent = `${movies.length} фильмов`;
 
             movieGrid.innerHTML = '';
 
             movies.forEach((movie, index) => {
                 const card = document.createElement('div');
                 card.className = 'movie-card';
-                card.style.animationDelay = `${0.05 + index * 0.04}s`;
+                card.style.animationDelay = `${0.04 + index * 0.04}s`;
 
-                const title = movie.name || movie.alternativeName || 'Без названия';
+                const title = movie.name || movie.alternativeName || 'без названия';
                 const year = movie.year || '';
                 const rating = movie.rating?.kp || movie.rating?.imdb || null;
                 const genres = movie.genres?.map(g => g.name).slice(0, 3).join(', ') || '—';
                 const countries = movie.countries?.map(c => c.name).slice(0, 2).join(', ') || '—';
-                const description = movie.description || movie.shortDescription || 'Описание отсутствует';
+                const description = movie.description || movie.shortDescription || '';
                 const poster = movie.poster?.url || movie.poster?.previewUrl || null;
                 const link = `https://www.kinopoisk.ru/film/${movie.id}/`;
 
@@ -728,14 +779,15 @@
                 }
 
                 const posterHtml = poster
-                    ? `<img class="movie-poster" src="${poster}" alt="${title}" loading="lazy" onerror="this.className='movie-poster placeholder'; this.textContent='🎬'">`
-                    : `<div class="movie-poster placeholder">🎬</div>`;
+                    ? `<img class="movie-poster" src="${poster}" alt="${title}" loading="lazy" onerror="this.className='movie-poster placeholder'; this.textContent='◈'">`
+                    : `<div class="movie-poster placeholder">◈</div>`;
 
                 const ratingHtml = rating !== null
-                    ? `<span class="movie-rating ${ratingClass}">⭐ ${ratingText}</span>`
+                    ? `<span class="movie-rating ${ratingClass}">★ ${ratingText}</span>`
                     : '';
 
                 const yearHtml = year ? `<span class="year">${year}</span>` : '';
+                const descHtml = description ? `<div class="movie-description">${description}</div>` : '';
 
                 card.innerHTML = `
                     ${posterHtml}
@@ -746,15 +798,13 @@
                                 ${yearHtml}
                             </div>
                             <div class="movie-meta">
-                                <span class="movie-meta-item"><span class="emoji">🎭</span> ${genres}</span>
-                                <span class="movie-meta-item"><span class="emoji">🌍</span> ${countries}</span>
+                                <span class="movie-meta-item">${genres}</span>
+                                <span class="movie-meta-item">${countries}</span>
                             </div>
                             ${ratingHtml}
-                            <div class="movie-description">${description}</div>
+                            ${descHtml}
                         </div>
-                        <a href="${link}" class="movie-link" target="_blank">
-                            🔗 Открыть на Кинопоиске
-                        </a>
+                        <a href="${link}" class="movie-link" target="_blank">→ кинопоиск</a>
                     </div>
                 `;
 
@@ -769,7 +819,7 @@
         }
 
         // =============================================================
-        // 6. ОБРАБОТЧИКИ
+        // 7. ОБРАБОТЧИКИ
         // =============================================================
         searchButton.addEventListener('click', () => {
             searchMovies(searchInput.value);
@@ -785,7 +835,8 @@
             tg.close();
         }
 
-        console.log('🎬 Красивый Mini App загружен!');
+        console.log('✦ KINOPOISK RUS загружен ✦');
+        console.log(`✦ цвет обновлён: ${new Date().toLocaleTimeString('ru-RU')}`);
     </script>
 </body>
 </html>
