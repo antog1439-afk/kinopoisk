@@ -765,13 +765,15 @@
         }
 
         // =============================================================
-        // 2. КОНФИГУРАЦИЯ
+        // 2. КОНФИГУРАЦИЯ - ВСТАВЬ СВОЙ КЛЮЧ!
         // =============================================================
-        // 🔑 ПОЛУЧИ КЛЮЧ НА https://api.kinopoisk.dev/
-        var KINOPOISK_API_KEY = 'ВАШ_КЛЮЧ_КИНОПОИСКА';  // ← ВСТАВЬ СВОЙ КЛЮЧ!
+        // ⚠️ ВАЖНО: Убедись, что в ключе нет лишних символов!
+        // Ключ должен состоять только из букв, цифр и дефисов
+        var KINOPOISK_API_KEY = 'P2RCP6B-3V24Q4W-N7RQSW3-0488PH9';
 
         // Для отладки
-        console.log('🔑 API ключ:', KINOPOISK_API_KEY ? '✅ установлен' : '❌ не установлен');
+        console.log('🔑 API ключ установлен:', KINOPOISK_API_KEY ? '✅' : '❌');
+        console.log('🔑 Длина ключа:', KINOPOISK_API_KEY.length);
 
         // =============================================================
         // 3. СМЕНА ЦВЕТА КАЖДЫЙ ЧАС
@@ -890,10 +892,13 @@
                 url += '&type=series';
             }
 
+            // Убедимся, что ключ чистый (только латиница, цифры и дефисы)
+            var cleanKey = KINOPOISK_API_KEY.replace(/[^A-Za-z0-9\-]/g, '');
+
             fetch(url, {
                 method: 'GET',
                 headers: {
-                    'X-API-KEY': KINOPOISK_API_KEY,
+                    'X-API-KEY': cleanKey,
                     'Content-Type': 'application/json'
                 }
             })
@@ -975,11 +980,11 @@
 
                 var title = movie.name || movie.alternativeName || 'без названия';
                 var year = movie.year || '';
-                var rating = movie.rating?.kp || movie.rating?.imdb || null;
+                var rating = movie.rating && movie.rating.kp ? movie.rating.kp : null;
                 var genres = movie.genres ? movie.genres.map(function(g) { return g.name; }).slice(0, 3).join(', ') : '—';
                 var countries = movie.countries ? movie.countries.map(function(c) { return c.name; }).slice(0, 2).join(', ') : '—';
                 var description = movie.description || movie.shortDescription || '';
-                var poster = movie.poster?.url || movie.poster?.previewUrl || null;
+                var poster = movie.poster && movie.poster.url ? movie.poster.url : null;
                 var link = 'https://www.kinopoisk.ru/film/' + movie.id + '/';
 
                 var ratingClass = '';
@@ -1104,7 +1109,6 @@
 
         console.log('✦ KINOPOISK RUS ✦');
         console.log('✦ Цвет обновлён: ' + new Date().toLocaleTimeString('ru-RU'));
-        console.log('✦ API ключ: ' + (KINOPOISK_API_KEY ? '✅ установлен' : '❌ не установлен'));
         console.log('✦ Вкладка: ' + currentTab);
     </script>
 </body>
