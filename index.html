@@ -853,6 +853,7 @@
         // 1. TELEGRAM WEB APP
         // =============================================================
         var tg = window.Telegram.WebApp;
+        tg.ready();
         tg.expand();
 
         if (tg.platform === 'android' || tg.platform === 'ios') {
